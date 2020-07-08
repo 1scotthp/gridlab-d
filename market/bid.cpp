@@ -30,11 +30,11 @@ EXPORT void submit_bid_state(char *from, char *to, char *function_name, char *fu
 			if(bidding_info->state == BS_UNKNOWN) {// not a stateful bid
 				gl_verbose("%s submits stateless bid for Q:%.2f at P:%.4f", from,bidding_info->quantity,bidding_info->price);
 				auction *mkt = OBJECTDATA(obj,auction);
-				rv = mkt->submit(from,bidding_info->quantity,bidding_info->price,bidding_info->bid_id,bidding_info->state,bidding_info->rebid, bidding_info->market_id);
+				rv = mkt->AM_submit(from,bidding_info->quantity,bidding_info->price,bidding_info->bid_id,bidding_info->state,bidding_info->rebid, bidding_info->market_id);
 			} else {
 				gl_verbose("%s submits stateful (%s) bid for Q:%.2f at P:%.4f", from,bidding_info->state,bidding_info->quantity,bidding_info->price);
 				auction *mkt = OBJECTDATA(obj,auction);
-				rv = mkt->submit(from,bidding_info->quantity,bidding_info->price,bidding_info->bid_id,bidding_info->state,bidding_info->rebid, bidding_info->market_id);
+				rv = mkt->AM_submit(from,bidding_info->quantity,bidding_info->price,bidding_info->bid_id,bidding_info->state,bidding_info->rebid, bidding_info->market_id);
 			}
 			if(rv == 0) {
 				bidding_info->bid_accepted = false;

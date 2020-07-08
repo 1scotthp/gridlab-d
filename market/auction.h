@@ -51,10 +51,11 @@ typedef enum {
 	AM_PROB=2
 } MARGINMODE;
 
-class auction : public gld_object {
+class auction : public gld_object, public GLDBase {
 public:
 	bool verbose;
 	bool use_future_mean_price;
+	//bool sendNetwork;
 	typedef enum {ST_ON=0, ST_OFF=1} STATISTICMODE;
 	typedef enum {IP_FALSE=0, IP_TRUE=1} IGNOREPRICECAP;
 	enumeration ignore_pricecap;
@@ -154,9 +155,9 @@ private:
 	FILE *curve_file;
 	int64 curve_log_count;
 public:
-	int submit(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id);
+	int submitImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id);
 private:
-	int submit_nolock(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id);
+	int submit_nolockImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id);
 public:
 	TIMESTAMP nextclear() const;
 private:

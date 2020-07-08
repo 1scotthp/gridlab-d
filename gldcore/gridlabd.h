@@ -1993,6 +1993,74 @@ static inline gld_object* get_object(char *n)
 	return get_object(obj);
 }
 
+#include <string>
+#include <sstream>
+//MinGW compiler does not like std::to_string, use patch::to_string instead
+namespace patch
+{
+    template < typename T > std::string to_string( const T& n )
+    {
+        std::ostringstream stm ;
+        stm << n ;
+        return stm.str() ;
+    }
+}
+
+
+
+typedef int64 KEY;
+
+typedef enum {
+	BS_UNKNOWN=0,
+	BS_OFF=1,
+	BS_ON=2
+} BIDDERSTATE;
+
+std::string bidToString(BIDDERSTATE bid){
+	if(bid == 0){
+		return patch::to_string(0);
+	} else if (bid == 1){
+		return patch::to_string(1);
+	} else {
+		return patch::to_string(2);
+	}
+}
+
+class GLDBase {
+public:
+	std::string GLDOutBuf;
+	std::string GLDInBuf;
+
+	std::string delim = "*@*";
+	std::string msgDelim = "%@%";
+
+	inline void addToOutBuf(std::string &message){
+		GLDOutBuf = GLDOutBuf + msgDelim + message;
+	};
+
+	inline void netPktArrived(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
+		//submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
+	};
+	inline int AM_submit(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
+		//if(this->sendNetwork){
+			std::string message = from + delim;
+			addToOutBuf(message);
+		//}else{
+			//submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
+			return 0;
+		//}
+	};
+
+	inline void AM_submit_nolock(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
+		//if(this->sendNetwork){
+			std::string message = from + delim + patch::to_string(quantity) + delim;// + patch::to_string(real_price) + delim + patch::to_string(key) + delim + bidToString(state) + delim + patch::to_string(rebid) + delim + patch::to_string(mkt_id);
+			addToOutBuf(message);
+		//}else{
+				//submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
+		//}
+	};
+};
+
 static PROPERTYSTRUCT nullpstruct;
 /// Property container
 class gld_property {
