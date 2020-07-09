@@ -1326,6 +1326,14 @@ public: // copy
 	inline gld_string &operator=(const char *s) { copy(s); return *this; };
 	/// link to a string
 	inline gld_string &operator=(gld_string&s) { link(s); return *this; };
+	inline gld_string &operator+(const char *s) {strcat(buf->str, s); return *this;};
+	inline gld_string &operator+(gld_string *s) {strcat(buf->str, s->buf->str); return *this;};
+	inline gld_string &operator+(double &s) {
+		char* ptr = (char*)(&s);
+		strcat(buf->str, ptr); return *this;};
+	inline gld_string &operator+(int64 s) {
+		char* ptr = (char*)(&s);
+		strcat(buf->str, ptr); return *this;};
 public: // casts
 	/// cast to a pointer to the string buffer
 	inline operator const char*(void) { return buf->str; };
@@ -1952,6 +1960,7 @@ protected: // special functions
 	inline bool operator == (gld_object *o) { return o!=NULL && my()==o->my(); };
 	inline bool operator == (OBJECT *o) { return o!=NULL && my()==o; };
 
+
 public: // member lookup functions
 	inline PROPERTY* get_property(char *name, PROPERTYSTRUCT *pstruct=NULL) { return callback->properties.get_property(my(),name,pstruct); };
 	inline FUNCTIONADDR get_function(char *name) { return (*callback->function.get)(my()->oclass->name,name); };
@@ -1992,6 +2001,66 @@ static inline gld_object* get_object(char *n)
 	OBJECT *obj = callback->get_object(n);
 	return get_object(obj);
 }
+
+
+typedef int64 KEY;
+
+typedef enum {
+	BS_UNKNOWN=0,
+	BS_OFF=1,
+	BS_ON=2
+} BIDDERSTATE;
+
+///gld_string inline bidState_to_string(BIDDERSTATE state){
+
+//}
+
+
+class GLDBase {
+public:
+	gld_string GLDOutBuf;
+	gld_string GLDInBuf;
+
+	const char *s = "*@*";
+	gld_string *delim = new gld_string(s);
+
+	const char *t = "%@%";
+	gld_string *msgDelim = new gld_string(t);
+
+	inline void addToOutBuf(gld_string &message){
+		//GLDOutBuf = GLDOutBuf + msgDelim + message;
+	};
+
+	virtual inline int submitImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) {
+
+	};
+	virtual inline int submit_nolockImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
+
+	};
+
+	inline void netPktArrived(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
+		submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
+	};
+	inline int AM_submit(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
+		//if(this->sendNetwork)
+			//gld_string message = from + delim;
+			//addToOutBuf(message);
+		//else
+			//submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
+			return 0;
+	};
+
+	inline void AM_submit_nolock(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
+			//if(this->sendNetwork)
+			//std::string message = from + delim + std::to_string(quantity) + delim + std::to_string(real_price) + delim + std::to_string(key) + delim + state + delim + rebid + delim + std::to_string(mkt_id);
+			gld_string *message = new gld_string(from);
+			*message = *message + delim + quantity + delim + real_price + delim;
+			addToOutBuf(*message);
+			//else
+				//submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
+	};
+
+};
 
 static PROPERTYSTRUCT nullpstruct;
 /// Property container
