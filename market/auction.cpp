@@ -111,6 +111,7 @@ auction::auction(MODULE *module)
 			PT_double, "init_stdev", PADDR(init_stdev),
 			PT_double, "future_mean_price", PADDR(future_mean_price),
 			PT_bool, "use_future_mean_price", PADDR(use_future_mean_price),
+			//PT_bool, "sendNetwork", true,
 
 			PT_timestamp, "current_market.start_time", PADDR(current_frame.start_time),
 			PT_timestamp, "current_market.end_time", PADDR(current_frame.end_time),
@@ -919,7 +920,7 @@ void auction::clear_market(void)
 		}
 		else if (unresponsive.quantity > 0.001)
 		{
-			submit_nolock(unresponsive.from, -unresponsive.quantity, unresponsive.price, unresponsive.bid_id, BS_ON, false, market_id);
+			AM_submit_nolock(unresponsive.from, -unresponsive.quantity, unresponsive.price, unresponsive.bid_id, BS_ON, false, market_id);
 			gl_verbose("capacity_reference_property %s has %.3f unresponsive load", gl_name(linkref,name,sizeof(name)), -unresponsive.quantity);
 		}
 	}
@@ -942,7 +943,7 @@ void auction::clear_market(void)
 					sprintf(msg, "capacity_reference_property %s uses units of %s and is incompatible with auction units (%s)", capacity_reference_property->name, capacity_reference_property->unit->name, unit.get_string());
 					throw msg;
 				} else {
-					submit_nolock((char *)OBJECTHDR(this)->name, max_capacity_reference_bid_quantity, capacity_reference_bid_price, (int64)OBJECTHDR(this)->id, BS_ON, false, market_id);
+					AM_submit_nolock((char *)OBJECTHDR(this)->name, max_capacity_reference_bid_quantity, capacity_reference_bid_price, (int64)OBJECTHDR(this)->id, BS_ON, false, market_id);
 					if (verbose) gl_output("Capacity reference object: %s bids %.2f at %.2f", capacity_reference_object->name, max_capacity_reference_bid_quantity, capacity_reference_bid_price);
 				}
 			}
@@ -1060,7 +1061,7 @@ void auction::clear_market(void)
 				gl_warning("Seller-only auction was given purchasing bids");
 			}
 			asks.clear();
-			submit((char *)OBJECTHDR(this)->name, -fixed_quantity, fixed_price, (int64)OBJECTHDR(this)->id, BS_ON, false, market_id);
+			AM_submit((char *)OBJECTHDR(this)->name, -fixed_quantity, fixed_price, (int64)OBJECTHDR(this)->id, BS_ON, false, market_id);
 			break;
 		case MD_FIXED_BUYER:
 			asks.sort(true);
@@ -1068,7 +1069,7 @@ void auction::clear_market(void)
 				gl_warning("Buyer-only auction was given offering bids");
 			}
 			offers.clear();
-			submit((char *)OBJECTHDR(this)->name, fixed_quantity, fixed_price, (int64)OBJECTHDR(this)->id, BS_ON, false, market_id);
+			AM_submit((char *)OBJECTHDR(this)->name, fixed_quantity, fixed_price, (int64)OBJECTHDR(this)->id, BS_ON, false, market_id);
 			break;
 		case MD_NONE:
 			offers.sort(false);
@@ -1481,12 +1482,12 @@ void auction::record_bid(char *from, double quantity, double real_price, BIDDERS
 	}
 }
 
-int auction::submit(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id)
+int auction::submitImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id)
 {
 	gld_wlock lock(my());
-	return submit_nolock(from,quantity,real_price,key,state, rebid, mkt_id);
+	return submit_nolockImpl(from,quantity,real_price,key,state, rebid, mkt_id);
 }
-int auction::submit_nolock(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id)
+int auction::submit_nolockImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id)
 {
 	char myname[64];
 	TIMESTAMP submit_time = gl_globalclock;

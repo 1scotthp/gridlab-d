@@ -7,6 +7,15 @@
 #include <stdarg.h>
 #include "gridlabd.h"
 
+<<<<<<< HEAD
+=======
+/*typedef enum {
+	BS_UNKNOWN=0,
+	BS_OFF=1,
+	BS_ON=2
+} BIDDERSTATE;*/
+
+>>>>>>> 8641e75df38fdd2625e835dcef88716973e7be8f
 typedef enum t_auction_special_mode {
 	MD_NONE = 0,
 	MD_SELLERS = 1,

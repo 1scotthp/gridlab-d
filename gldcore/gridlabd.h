@@ -2003,6 +2003,7 @@ static inline gld_object* get_object(char *n)
 }
 
 
+
 typedef int64 KEY;
 
 typedef enum {
@@ -2010,10 +2011,6 @@ typedef enum {
 	BS_OFF=1,
 	BS_ON=2
 } BIDDERSTATE;
-
-///gld_string inline bidState_to_string(BIDDERSTATE state){
-
-//}
 
 
 class GLDBase {
@@ -2059,8 +2056,6 @@ public:
 			//else
 				//submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
 	};
-
-};
 
 static PROPERTYSTRUCT nullpstruct;
 /// Property container
