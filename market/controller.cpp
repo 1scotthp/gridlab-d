@@ -1036,8 +1036,13 @@ TIMESTAMP controller::sync(TIMESTAMP t0, TIMESTAMP t1){
 	double dBand = 0.0;
 	double heatDemand = 0.0;
 	double coolDemand = 0.0;
+	//char *a = "proxy_average";
+	//gld_object *o = market;
+	//OBJECT *obj = o->my();
 	if(bidmode != BM_PROXY){
 		pAvg->getp(avgP);
+		//double *val = object_get_double_by_name(obj, a);
+		//avgP = *val;
 		pStd->getp(stdP);
 		pMarketId->getp(marketId);
 		pClearedPrice->getp(clrP);

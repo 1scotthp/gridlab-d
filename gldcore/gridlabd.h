@@ -2013,6 +2013,8 @@ typedef enum {
 } BIDDERSTATE;
 
 
+
+
 class GLDBase {
 public:
 	gld_string GLDOutBuf;
@@ -2056,6 +2058,7 @@ public:
 			//else
 				//submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
 	};
+};
 
 static PROPERTYSTRUCT nullpstruct;
 /// Property container
