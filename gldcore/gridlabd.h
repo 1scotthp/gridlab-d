@@ -2012,15 +2012,6 @@ typedef enum {
 	BS_ON=2
 } BIDDERSTATE;
 
-/*
-gld_string bid_state_to_string(BIDDERSTATE state){
-	double a = state;
-	gld_string *delim = new gld_string(a);
-
-	return gld_string(state);
-}
-*/
-
 inline const char * const boolToString(bool b)
 {
   return b ? "true" : "false";

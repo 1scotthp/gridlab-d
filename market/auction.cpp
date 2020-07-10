@@ -1410,9 +1410,6 @@ void auction::clear_market(void)
 		STATISTIC *stat = 0;
 		OBJECT *obj = OBJECTHDR(this);
 		memcpy(&past_frame, &current_frame, sizeof(MARKETFRAME)); // just the frame
-		/*FINDLIST *climates = NULL;
-		climates = gl_find_objects(FL_NEW,FT_CLASS,SAME,"climate",FT_END);*/
-		// ~ copy new data in
 
 		current_frame.market_id = cleared_frame.market_id;
 		current_frame.start_time = cleared_frame.start_time;
@@ -1431,6 +1428,17 @@ void auction::clear_market(void)
 		++total_samples;
 		update_statistics();
 		
+		FINDLIST *controllers = NULL;
+		controllers = gl_find_objects(FL_NEW,FT_CLASS,SAME,"controller",FT_END);
+		OBJECT *objPtr = gl_find_next(controllers,NULL);
+
+		while(objPtr != NULL){
+			//for each controller object, set parameters
+			//object_set_value_by_name(*objPtr, )
+			objPtr = gl_find_next(controllers, NULL);
+		}
+		// ~ copy new data in
+
 	}
 
 	// record the results
