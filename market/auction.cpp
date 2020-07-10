@@ -111,7 +111,7 @@ auction::auction(MODULE *module)
 			PT_double, "init_stdev", PADDR(init_stdev),
 			PT_double, "future_mean_price", PADDR(future_mean_price),
 			PT_bool, "use_future_mean_price", PADDR(use_future_mean_price),
-			//PT_bool, "sendNetwork", true,
+			PT_bool, "sendNetwork", true,
 
 			PT_timestamp, "current_market.start_time", PADDR(current_frame.start_time),
 			PT_timestamp, "current_market.end_time", PADDR(current_frame.end_time),
@@ -1410,7 +1410,10 @@ void auction::clear_market(void)
 		STATISTIC *stat = 0;
 		OBJECT *obj = OBJECTHDR(this);
 		memcpy(&past_frame, &current_frame, sizeof(MARKETFRAME)); // just the frame
+		/*FINDLIST *climates = NULL;
+		climates = gl_find_objects(FL_NEW,FT_CLASS,SAME,"climate",FT_END);*/
 		// ~ copy new data in
+
 		current_frame.market_id = cleared_frame.market_id;
 		current_frame.start_time = cleared_frame.start_time;
 		current_frame.end_time = cleared_frame.end_time;

@@ -55,7 +55,7 @@ class auction : public gld_object, public GLDBase {
 public:
 	bool verbose;
 	bool use_future_mean_price;
-	//bool sendNetwork;
+	bool sendNetwork;
 	typedef enum {ST_ON=0, ST_OFF=1} STATISTICMODE;
 	typedef enum {IP_FALSE=0, IP_TRUE=1} IGNOREPRICECAP;
 	enumeration ignore_pricecap;

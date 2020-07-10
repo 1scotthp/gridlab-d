@@ -1331,7 +1331,7 @@ public: // copy
 	inline gld_string &operator+(double &s) {
 		char* ptr = (char*)(&s);
 		strcat(buf->str, ptr); return *this;};
-	inline gld_string &operator+(int64 s) {
+	inline gld_string &operator+(int64 &s) {
 		char* ptr = (char*)(&s);
 		strcat(buf->str, ptr); return *this;};
 public: // casts
@@ -2012,6 +2012,20 @@ typedef enum {
 	BS_ON=2
 } BIDDERSTATE;
 
+/*
+gld_string bid_state_to_string(BIDDERSTATE state){
+	double a = state;
+	gld_string *delim = new gld_string(a);
+
+	return gld_string(state);
+}
+*/
+
+inline const char * const boolToString(bool b)
+{
+  return b ? "true" : "false";
+}
+
 
 
 
@@ -2030,33 +2044,30 @@ public:
 		//GLDOutBuf = GLDOutBuf + msgDelim + message;
 	};
 
-	virtual inline int submitImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) {
-
-	};
-	virtual inline int submit_nolockImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
-
-	};
+	virtual int submitImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) = 0;
+	virtual int submit_nolockImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) = 0;
 
 	inline void netPktArrived(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
 		submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
 	};
 	inline int AM_submit(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
 		//if(this->sendNetwork)
-			//gld_string message = from + delim;
-			//addToOutBuf(message);
-		//else
-			//submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
-			return 0;
+		double dblState = state;
+		gld_string *message = new gld_string(from);
+		*message = *message + delim + quantity + delim + real_price + delim + key + delim + dblState + delim + boolToString(rebid) + delim + mkt_id;
+		addToOutBuf(*message);
+		return 0;
 	};
 
-	inline void AM_submit_nolock(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
-			//if(this->sendNetwork)
-			//std::string message = from + delim + std::to_string(quantity) + delim + std::to_string(real_price) + delim + std::to_string(key) + delim + state + delim + rebid + delim + std::to_string(mkt_id);
+	inline int AM_submit_nolock(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
+		//if(this->sendNetwork)
+			double dblState = state;
 			gld_string *message = new gld_string(from);
-			*message = *message + delim + quantity + delim + real_price + delim;
+			*message = *message + delim + quantity + delim + real_price + delim + key + delim + dblState + delim + boolToString(rebid) + delim + mkt_id;
 			addToOutBuf(*message);
-			//else
-				//submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
+			return 0;
+/*			else
+				return 1;*/
 	};
 };
 
