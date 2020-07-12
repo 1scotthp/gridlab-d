@@ -1431,10 +1431,35 @@ void auction::clear_market(void)
 		FINDLIST *controllers = NULL;
 		controllers = gl_find_objects(FL_NEW,FT_CLASS,SAME,"controller",FT_END);
 		OBJECT *objPtr = gl_find_next(controllers,NULL);
+		OBJECT *aucPtr = OBJECTHDR(this);
 
+		/*pAvg->getp(avgP);
+				pStd->getp(stdP);
+				pMarketId->getp(marketId);
+				pClearedPrice->getp(clrP);
+				pPriceCap->getp(pCap);
+				pMarginalFraction->getp(marginalFraction);
+				pMarginMode->getp(marginMode);
+				pClearedQuantity->getp(clrQ);
+				pSellerTotalQuantity->getp(sellerTotalQ);
+				pClearingType->getp(clrType);
+
+*/
+		char buffer[1024];
 		while(objPtr != NULL){
 			//for each controller object, set parameters
 			//object_set_value_by_name(*objPtr, )
+			gl_set_value_by_name(objPtr, "avgP", "a");
+			char* marketId_value = (char*)gl_get_value_by_name(aucPtr, "market_Id", buffer, sizeof(buffer));
+			gl_set_value_by_name(objPtr, "marketId", marketId_value);
+			/*object_set_value_by_name(objPtr, "clrP", value);
+			object_set_value_by_name(objPtr, "pCap", value);
+			object_set_value_by_name(objPtr, "marginalFraction", value);
+			object_set_value_by_name(objPtr, "marginMode", value);
+			object_set_value_by_name(objPtr, "clrQ", value);
+			object_set_value_by_name(objPtr, "sellerTotalQ", value);
+			object_set_value_by_name(objPtr, "clrType", value);
+*/
 			objPtr = gl_find_next(controllers, NULL);
 		}
 		// ~ copy new data in

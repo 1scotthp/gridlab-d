@@ -247,6 +247,20 @@ private:
 	enumeration proxy_clearing_type;
 	enumeration proxy_clearing_type2;
 	double proxy_marginal_fraction2;
+
+	double avgP;
+	double stdP;
+	int64 marketId;
+	int64 market2Id;
+	double clrP;
+	double pCap;
+	double pCap2;
+	double marginalFraction;
+	double marginalFraction2;
+	enumeration marginMode;
+	double clrQ;
+	double clrQ2;
+
 };
 
 #endif // _controller_H
