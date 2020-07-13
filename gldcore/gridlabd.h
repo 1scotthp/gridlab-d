@@ -2051,15 +2051,17 @@ public:
 	}
 };
 
+GLDBuffer *buf = new GLDBuffer();
+
 class GLDBase {
 public:
 
-	GLDBuffer *buf;
-	//virtual int submitImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id);
-	//virtual int submit_nolockImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id);
+	//GLDBuffer *buf;
+	virtual int submitImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) = 0;
+	virtual int submit_nolockImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) = 0;
 
 	inline void netPktArrived(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
-		//submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
+		submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
 	};
 	inline int AM_submit(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
 		//if(this->sendNetwork)
@@ -2084,8 +2086,6 @@ public:
 	};
 };
 
-GLDBase *a = new GLDBase();
-
 /** Set the value of a property in an object
 	@see object_set_value_by_name()
  **/
@@ -2093,7 +2093,7 @@ inline int gl_set_value_by_name(OBJECT *obj, PROPERTYNAME name, char *value){
 	if(false){
 		*callback->properties.set_value_by_name;
 	} else {//send over network
-		a->buf->addDataOutBuf(obj, name, value);
+		 buf->addDataOutBuf(obj, name, value);
 	}
 }
 
