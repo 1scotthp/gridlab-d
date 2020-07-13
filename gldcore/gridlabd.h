@@ -2029,17 +2029,16 @@ inline const char * const boolToString(bool b)
   return b ? "true" : "false";
 }
 
-
-class GLDBase {
+class GLDBuffer {
 public:
 	gld_string GLDOutBuf;
 	gld_string GLDInBuf;
 
-	const char *s = "*@*";
-	const gld_string *delim = new gld_string(s);
+	//const char *s = "*@*";
+	gld_string *delim = new gld_string("*@*");
 
-	const char *t = "%@%";
-	const gld_string *msgDelim = new gld_string(t);
+
+	gld_string *msgDelim = new gld_string("%@%");
 
 	inline void addMsgOutBuf(gld_string &message){
 		GLDOutBuf = GLDOutBuf + msgDelim + message;
@@ -2048,8 +2047,14 @@ public:
 	inline void addDataOutBuf(OBJECT *obj, PROPERTYNAME name, char *value){
 		gld_string *message = new gld_string(obj->name);
 		*message = *message + delim + name + value;
+		addMsgOutBuf(*message);
 	}
+};
 
+class GLDBase {
+public:
+
+	GLDBuffer *buf;
 	//virtual int submitImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id);
 	//virtual int submit_nolockImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id);
 
@@ -2060,8 +2065,9 @@ public:
 		//if(this->sendNetwork)
 		double dblState = state;
 		gld_string *message = new gld_string(from);
-		*message = *message + delim + quantity + delim + real_price + delim + key + delim + dblState + delim + boolToString(rebid) + delim + mkt_id;
-		addMsgOutBuf(*message);
+		*message = *message + buf->delim + quantity + buf->delim + real_price + buf->delim + key +
+				buf->delim + dblState + buf->delim + boolToString(rebid) + buf->delim + mkt_id;
+		buf->addMsgOutBuf(*message);
 		return 0;
 	};
 
@@ -2069,8 +2075,9 @@ public:
 		//if(this->sendNetwork)
 			double dblState = state;
 			gld_string *message = new gld_string(from);
-			*message = *message + delim + quantity + delim + real_price + delim + key + delim + dblState + delim + boolToString(rebid) + delim + mkt_id;
-			addMsgOutBuf(*message);
+			*message = *message + buf->delim + quantity + buf->delim + real_price + buf->delim + key +
+				buf->delim + dblState + buf->delim + boolToString(rebid) + buf->delim + mkt_id;
+			buf->addMsgOutBuf(*message);
 			return 0;
 /*			else
 				return 1;*/
@@ -2086,7 +2093,7 @@ inline int gl_set_value_by_name(OBJECT *obj, PROPERTYNAME name, char *value){
 	if(false){
 		*callback->properties.set_value_by_name;
 	} else {//send over network
-		a->addDataOutBuf(obj, name, value);
+		a->buf->addDataOutBuf(obj, name, value);
 	}
 }
 
