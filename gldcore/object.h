@@ -332,6 +332,7 @@ typedef struct s_callbacks {
 extern "C" {
 #endif
 
+
 OBJECT *object_create_single(CLASS *oclass);
 OBJECT *object_create_array(CLASS *oclass, unsigned int n_objects);
 OBJECT *object_create_foreign(OBJECT *obj);

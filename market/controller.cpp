@@ -1015,7 +1015,7 @@ TIMESTAMP controller::sync(TIMESTAMP t0, TIMESTAMP t1){
 	OBJECT *hdr = OBJECTHDR(this);
 	char mktname[1024];
 	char ctrname[1024];
-	double avgP = 0.0;
+/*	double avgP = 0.0;
 	double stdP = 0.0;
 	int64 marketId = 0;
 	int64 market2Id = 0;
@@ -1026,7 +1026,7 @@ TIMESTAMP controller::sync(TIMESTAMP t0, TIMESTAMP t1){
 	double marginalFraction2 = 0.0;
 	enumeration marginMode = AM_NONE;
 	double clrQ = 0.0;
-	double clrQ2 = 0.0;
+	double clrQ2 = 0.0;*/
 	double sellerTotalQ = 0.0;
 	enumeration clrType = CT_EXACT;
 	enumeration clrType2 = CT_EXACT;
@@ -1036,7 +1036,7 @@ TIMESTAMP controller::sync(TIMESTAMP t0, TIMESTAMP t1){
 	double dBand = 0.0;
 	double heatDemand = 0.0;
 	double coolDemand = 0.0;
-	if(bidmode != BM_PROXY){
+	/*if(bidmode != BM_PROXY){
 		pAvg->getp(avgP);
 		pStd->getp(stdP);
 		pMarketId->getp(marketId);
@@ -1047,12 +1047,12 @@ TIMESTAMP controller::sync(TIMESTAMP t0, TIMESTAMP t1){
 		pClearedQuantity->getp(clrQ);
 		pSellerTotalQuantity->getp(sellerTotalQ);
 		pClearingType->getp(clrType);
-/*		avgP = gl_get_double_by_name(obj, "proxy_average");
+		avgP = gl_get_double_by_name(obj, "proxy_average");
 		stdP = gl_get_double_by_name(obj, "proxy_average");
 		marketId = gl_get_int64_by_name(obj, "proxy_average");
 		clrP = gl_get_double_by_name(obj, "proxy_average");
 		pCap = gl_get_double_by_name(obj, "proxy_average");
-		marginalFraction = gl_get_double_by_name(obj, "proxy_average");*/
+		marginalFraction = gl_get_double_by_name(obj, "proxy_average");
 	} else if(bidmode == BM_PROXY) {
 		avgP = pAvg->get_double();
 		stdP = pStd->get_double();
@@ -1064,7 +1064,7 @@ TIMESTAMP controller::sync(TIMESTAMP t0, TIMESTAMP t1){
 		clrQ = pClearedQuantity->get_double();
 		sellerTotalQ = pSellerTotalQuantity->get_double();
 		clrType = pClearingType->get_enumeration();
-	}
+	}*/
 	pMonitor->getp(monitor);
 	if(control_mode == CN_RAMP || control_mode == CN_DEV_LEVEL){
 		pDemand->getp(demandP);

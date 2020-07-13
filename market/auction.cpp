@@ -1450,11 +1450,10 @@ void auction::clear_market(void)
 			//for each controller object, set parameters
 			//object_set_value_by_name(*objPtr, )
 			gl_set_value_by_name(objPtr, "avgP", "a");
-			char* marketId_value = (char*)gl_get_value_by_name(aucPtr, "market_Id", buffer, sizeof(buffer));
-			gl_set_value_by_name(objPtr, "marketId", marketId_value);
-			/*object_set_value_by_name(objPtr, "clrP", value);
-			object_set_value_by_name(objPtr, "pCap", value);
-			object_set_value_by_name(objPtr, "marginalFraction", value);
+			gl_set_value_by_name(objPtr, "marketId", (char*)gl_get_value_by_name(aucPtr, "market_Id", buffer, sizeof(buffer)));
+			gl_set_value_by_name(objPtr, "clrP", (char*)gl_get_value_by_name(aucPtr, "current_market.clearing_price", buffer, sizeof(buffer)));
+			gl_set_value_by_name(objPtr, "pCap", (char*)gl_get_value_by_name(aucPtr, "price_cap", buffer, sizeof(buffer)));
+			/*object_set_value_by_name(objPtr, "marginalFraction", value);
 			object_set_value_by_name(objPtr, "marginMode", value);
 			object_set_value_by_name(objPtr, "clrQ", value);
 			object_set_value_by_name(objPtr, "sellerTotalQ", value);

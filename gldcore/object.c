@@ -43,6 +43,8 @@
 #include "threadpool.h"
 #include "exec.h"
 
+
+
 /* object list */
 static OBJECTNUM next_object_id = 0;
 static OBJECTNUM deleted_object_count = 0;
@@ -989,30 +991,35 @@ int object_set_value_by_name(OBJECT *obj, /**< the object to change */
 							 PROPERTYNAME name, /**< the name of the property to change */
 							 char *value) /**< the value to set */
 {
-	void *addr;
-	PROPERTY *prop = class_find_property(obj->oclass,name);
-	if(prop==NULL)
-	{
-		if(set_header_value(obj,name,value)==FAILED)
+	if(false){
+		void *addr;
+		PROPERTY *prop = class_find_property(obj->oclass,name);
+		if(prop==NULL)
 		{
-			errno = ENOENT;
+			if(set_header_value(obj,name,value)==FAILED)
+			{
+				errno = ENOENT;
+				return 0;
+			}
+			else
+			{
+				size_t len = strlen(value);
+				return len>0?(int)len:1; /* empty string is not necessarily wrong */
+			}
+		}
+		if((prop->access != PA_PUBLIC) && (prop->access != PA_HIDDEN)){
+			output_error("trying to set the value of non-public property %s in %s", prop->name, obj->oclass->name);
+			/*	TROUBLESHOOT
+			The specified property was published by its object as private.  It may not be modified by other modules.
+			 */
 			return 0;
 		}
-		else
-		{
-			size_t len = strlen(value);
-			return len>0?(int)len:1; /* empty string is not necessarily wrong */
-		}
+		addr = (void*)((char *)(obj+1)+(int64)(prop->addr)); /* warning: cast from pointer to integer of different size */
+		return object_set_value_by_addr(obj,addr,value,prop);
+	} else {//send over network
+		//obj->oclass->addDataOutBuf(obj, name, value);
 	}
-	if((prop->access != PA_PUBLIC) && (prop->access != PA_HIDDEN)){
-		output_error("trying to set the value of non-public property %s in %s", prop->name, obj->oclass->name);
-		/*	TROUBLESHOOT
-			The specified property was published by its object as private.  It may not be modified by other modules.
-		*/
-		return 0;
-	}
-	addr = (void*)((char *)(obj+1)+(int64)(prop->addr)); /* warning: cast from pointer to integer of different size */
-	return object_set_value_by_addr(obj,addr,value,prop);
+
 }
 
 

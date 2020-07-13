@@ -618,11 +618,20 @@ inline char *gl_getvalue(OBJECT *obj,
 	return gl_get_value_by_name(obj,name,buffer,sz)>=0 ? buffer : NULL;
 }
 #endif
+//Set the value of a property in an object
+	//@see object_set_value_by_name()
 
-/** Set the value of a property in an object
-	@see object_set_value_by_name()
- **/
-#define gl_set_value_by_name (*callback->properties.set_value_by_name)
+/*inline void gl_set_value_by_name (OBJECT *obj,
+		PROPERTYNAME name,
+		char *value)
+{
+	if(false){
+		*callback->properties.set_value_by_name;
+	} else {//send over network
+		addDataOutBuf(obj, name, value);
+	}
+}*/
+//#define gl_set_value_by_name (*callback->properties.set_value_by_name)
 
 /** Get unit of property
 	@see object_get_unit()
@@ -1317,6 +1326,7 @@ public: // construction/destructor
 	inline gld_string(gld_string&s) : buf(NULL) { init(); link(s); };
 	/// construct a new string
 	inline gld_string(const char *s) : buf(NULL) { init(); copy(s); };
+	inline gld_string(char *s) : buf(NULL) { init(); copy(s); };
 	/// construct a new string of a particular length
 	inline gld_string(const char *s, size_t n) : buf(NULL) { init(); copy(s,n); };
 	/// destroy a string (or unlink from one)
@@ -1327,7 +1337,9 @@ public: // copy
 	/// link to a string
 	inline gld_string &operator=(gld_string&s) { link(s); return *this; };
 	inline gld_string &operator+(const char *s) {strcat(buf->str, s); return *this;};
+	inline gld_string &operator+(char *s) {strcat(buf->str, s); return *this;};
 	inline gld_string &operator+(gld_string *s) {strcat(buf->str, s->buf->str); return *this;};
+	inline gld_string &operator+(const gld_string *s) {strcat(buf->str, s->buf->str); return *this;};
 	inline gld_string &operator+(double &s) {
 		char* ptr = (char*)(&s);
 		strcat(buf->str, ptr); return *this;};
@@ -2018,35 +2030,38 @@ inline const char * const boolToString(bool b)
 }
 
 
-
-
 class GLDBase {
 public:
 	gld_string GLDOutBuf;
 	gld_string GLDInBuf;
 
 	const char *s = "*@*";
-	gld_string *delim = new gld_string(s);
+	const gld_string *delim = new gld_string(s);
 
 	const char *t = "%@%";
-	gld_string *msgDelim = new gld_string(t);
+	const gld_string *msgDelim = new gld_string(t);
 
-	inline void addToOutBuf(gld_string &message){
-		//GLDOutBuf = GLDOutBuf + msgDelim + message;
+	inline void addMsgOutBuf(gld_string &message){
+		GLDOutBuf = GLDOutBuf + msgDelim + message;
 	};
 
-	virtual int submitImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) = 0;
-	virtual int submit_nolockImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) = 0;
+	inline void addDataOutBuf(OBJECT *obj, PROPERTYNAME name, char *value){
+		gld_string *message = new gld_string(obj->name);
+		*message = *message + delim + name + value;
+	}
+
+	//virtual int submitImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id);
+	//virtual int submit_nolockImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id);
 
 	inline void netPktArrived(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
-		submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
+		//submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
 	};
 	inline int AM_submit(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
 		//if(this->sendNetwork)
 		double dblState = state;
 		gld_string *message = new gld_string(from);
 		*message = *message + delim + quantity + delim + real_price + delim + key + delim + dblState + delim + boolToString(rebid) + delim + mkt_id;
-		addToOutBuf(*message);
+		addMsgOutBuf(*message);
 		return 0;
 	};
 
@@ -2055,12 +2070,25 @@ public:
 			double dblState = state;
 			gld_string *message = new gld_string(from);
 			*message = *message + delim + quantity + delim + real_price + delim + key + delim + dblState + delim + boolToString(rebid) + delim + mkt_id;
-			addToOutBuf(*message);
+			addMsgOutBuf(*message);
 			return 0;
 /*			else
 				return 1;*/
 	};
 };
+
+GLDBase *a = new GLDBase();
+
+/** Set the value of a property in an object
+	@see object_set_value_by_name()
+ **/
+inline int gl_set_value_by_name(OBJECT *obj, PROPERTYNAME name, char *value){
+	if(false){
+		*callback->properties.set_value_by_name;
+	} else {//send over network
+		a->addDataOutBuf(obj, name, value);
+	}
+}
 
 static PROPERTYSTRUCT nullpstruct;
 /// Property container
