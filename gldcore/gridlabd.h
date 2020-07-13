@@ -2079,25 +2079,24 @@ public:
 		}
 	};
 	inline int AM_submit(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
-		//if(this->sendNetwork)
-		double dblState = state;
-		gld_string *message = new gld_string(from);
-		*message = *message + buf->delim + quantity + buf->delim + real_price + buf->delim + key +
-				buf->delim + dblState + buf->delim + boolToString(rebid) + buf->delim + mkt_id;
-		buf->addMsgOutBuf(*message);
-		return 0;
+		if(false){
+			return submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
+		} else {
+			return AM_submit_nolock(from, quantity, real_price, key, state, rebid, mkt_id);
+		}
 	};
 
 	inline int AM_submit_nolock(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
-		//if(this->sendNetwork)
-		double dblState = state;
-		gld_string *message = new gld_string(from);
-		*message = *message + buf->delim + quantity + buf->delim + real_price + buf->delim + key +
-				buf->delim + dblState + buf->delim + boolToString(rebid) + buf->delim + mkt_id;
-		buf->addMsgOutBuf(*message);
-		return 0;
-		/*			else
-				return 1;*/
+		if(true){
+			double dblState = state;
+			gld_string *message = new gld_string(from);
+			*message = *message + buf->delim + quantity + buf->delim + real_price + buf->delim + key +
+					buf->delim + dblState + buf->delim + boolToString(rebid) + buf->delim + mkt_id;
+			buf->addMsgOutBuf(*message);
+			return 0;
+		} else {
+			submit_nolockImpl(from, quantity, real_price, key, state, rebid, mkt_id);
+		}
 	};
 };
 
