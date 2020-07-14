@@ -1339,12 +1339,19 @@ public: // copy
 
 	inline bool empty(){return buf->str == NULL;};
 
-	inline gld_string& getUntilDelim(gld_string &delim){
+	inline gld_string& getStrUntilDelim(gld_string &delim){
 		size_t index = findstr(delim);
 		gld_string a(this->left(index));
 		*this = this->right(index + delim.get_length());
 		return a;
 	}
+
+	inline char* getCharUntilDelim(gld_string &delim){
+			size_t index = findstr(delim);
+			gld_string a(this->left(index));
+			*this = this->right(index + delim.get_length());
+			return a.buf->str;
+		}
 public: // casts
 	/// cast to a pointer to the string buffer
 	inline operator const char*(void) { return buf->str; };
@@ -2023,6 +2030,19 @@ typedef enum {
 	BS_ON=2
 } BIDDERSTATE;
 
+BIDDERSTATE& charToState(char *s){
+	BIDDERSTATE bidState;
+	if(*s == '0'){
+		bidState = BS_UNKNOWN;
+	} else if(*s == '1'){
+		bidState = BS_OFF;
+	} else if(*s == '2'){
+		bidState = BS_ON;
+	} else {
+
+	}
+}
+
 inline const char * const boolToString(bool b)
 {
   return b ? "true" : "false";
@@ -2054,17 +2074,17 @@ public:
 	virtual int submitImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) = 0;
 	virtual int submit_nolockImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) = 0;
 
-	inline void netPktArrived(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
+	inline void netPktArrived(){
 		while(!buf->GLDInBuf.empty()){
-			gld_string line = buf->GLDInBuf.getUntilDelim(*buf->msgDelim);
+			gld_string line = buf->GLDInBuf.getStrUntilDelim(*buf->msgDelim);
 
-/*			char *from = buf->GLDInBuf.getUntilDelim(*buf->delim);
-			double quantity = buf->GLDInBuf.getUntilDelim(*buf->delim);
-			double real_price = buf->GLDInBuf.getUntilDelim(*buf->delim);
-			KEY key = buf->GLDInBuf.getUntilDelim(*buf->delim);
-			BIDDERSTATE state = buf->GLDInBuf.getUntilDelim(*buf->delim);
-			bool rebid = buf->GLDInBuf.getUntilDelim(*buf->delim);
-			int64 mkt_id = buf->GLDInBuf.getUntilDelim(*buf->delim);*/
+			char *from = buf->GLDInBuf.getCharUntilDelim(*buf->delim);
+			double quantity = atof(buf->GLDInBuf.getCharUntilDelim(*buf->delim));
+			double real_price = atof(buf->GLDInBuf.getCharUntilDelim(*buf->delim));
+			KEY key = atoll(buf->GLDInBuf.getCharUntilDelim(*buf->delim));
+			BIDDERSTATE state = charToState((buf->GLDInBuf.getCharUntilDelim(*buf->delim)));
+			bool rebid = ('1' == *buf->GLDInBuf.getCharUntilDelim(*buf->delim));
+			int64 mkt_id = atoll(buf->GLDInBuf.getCharUntilDelim(*buf->delim));
 			submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
 		}
 	};
