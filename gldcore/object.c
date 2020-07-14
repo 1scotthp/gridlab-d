@@ -991,7 +991,6 @@ int object_set_value_by_name(OBJECT *obj, /**< the object to change */
 							 PROPERTYNAME name, /**< the name of the property to change */
 							 char *value) /**< the value to set */
 {
-	if(false){
 		void *addr;
 		PROPERTY *prop = class_find_property(obj->oclass,name);
 		if(prop==NULL)
@@ -1016,10 +1015,6 @@ int object_set_value_by_name(OBJECT *obj, /**< the object to change */
 		}
 		addr = (void*)((char *)(obj+1)+(int64)(prop->addr)); /* warning: cast from pointer to integer of different size */
 		return object_set_value_by_addr(obj,addr,value,prop);
-	} else {//send over network
-		//obj->oclass->addDataOutBuf(obj, name, value);
-	}
-
 }
 
 

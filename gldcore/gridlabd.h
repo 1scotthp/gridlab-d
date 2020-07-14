@@ -621,17 +621,7 @@ inline char *gl_getvalue(OBJECT *obj,
 //Set the value of a property in an object
 	//@see object_set_value_by_name()
 
-/*inline void gl_set_value_by_name (OBJECT *obj,
-		PROPERTYNAME name,
-		char *value)
-{
-	if(false){
-		*callback->properties.set_value_by_name;
-	} else {//send over network
-		addDataOutBuf(obj, name, value);
-	}
-}*/
-//#define gl_set_value_by_name (*callback->properties.set_value_by_name)
+#define gl_set_value_by_name (*callback->properties.set_value_by_name)
 
 /** Get unit of property
 	@see object_get_unit()
@@ -2103,8 +2093,8 @@ public:
 /** Set the value of a property in an object
 	@see object_set_value_by_name()
  **/
-inline int gl_set_value_by_name(OBJECT *obj, PROPERTYNAME name, char *value){
-	if(true){
+inline int network_set_value_by_name(OBJECT *obj, PROPERTYNAME name, char *value){
+	if(false){
 		*callback->properties.set_value_by_name;
 	} else {//send over network
 		buf->addDataOutBuf(obj, name, value);
