@@ -2104,7 +2104,7 @@ public:
 	@see object_set_value_by_name()
  **/
 inline int gl_set_value_by_name(OBJECT *obj, PROPERTYNAME name, char *value){
-	if(false){
+	if(true){
 		*callback->properties.set_value_by_name;
 	} else {//send over network
 		buf->addDataOutBuf(obj, name, value);
