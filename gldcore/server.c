@@ -1823,6 +1823,7 @@ int http_control_request(HTTPCNX *http, char *action)
 		if ( ts!=TS_INVALID )
 		{
 			output_verbose("main loop pause at %s", buffer);
+			//checkInBuf();
 			exec_mls_resume(ts);
 			return 1;
 		}

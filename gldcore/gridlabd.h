@@ -2048,7 +2048,7 @@ inline const char * const boolToString(bool b)
   return b ? "true" : "false";
 }
 
-class GLDBuffer {
+class GLDBuffer {//should make this a singleton?
 public:
 	gld_string GLDOutBuf;
 	gld_string GLDInBuf;
@@ -2118,6 +2118,14 @@ inline int network_set_value_by_name(OBJECT *obj, PROPERTYNAME name, char *value
 		*callback->properties.set_value_by_name;
 	} else {//send over network
 		buf->addDataOutBuf(obj, name, value);
+	}
+}
+
+inline void checkInBuf(){
+	gld_string a(buf->GLDInBuf);
+	while(!buf->GLDInBuf.empty()){
+		//if its bid, find the auction object and call netPktArrived
+		//otherwise do gl_set_value_by_name
 	}
 }
 

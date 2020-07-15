@@ -1448,17 +1448,17 @@ void auction::clear_market(void)
 		char buffer[1024];
 		while(objPtr != NULL){
 			//for each controller object, set parameters
-			//object_set_value_by_name(*objPtr, )
-			gl_set_value_by_name(objPtr, "avgP", "a");
-			gl_set_value_by_name(objPtr, "marketId", (char*)gl_get_value_by_name(aucPtr, "market_Id", buffer, sizeof(buffer)));
-			gl_set_value_by_name(objPtr, "clrP", (char*)gl_get_value_by_name(aucPtr, "current_market.clearing_price", buffer, sizeof(buffer)));
-			gl_set_value_by_name(objPtr, "pCap", (char*)gl_get_value_by_name(aucPtr, "price_cap", buffer, sizeof(buffer)));
-			/*object_set_value_by_name(objPtr, "marginalFraction", value);
-			object_set_value_by_name(objPtr, "marginMode", value);
-			object_set_value_by_name(objPtr, "clrQ", value);
-			object_set_value_by_name(objPtr, "sellerTotalQ", value);
-			object_set_value_by_name(objPtr, "clrType", value);
-*/
+			network_set_value_by_name(objPtr, "avgP", "a");
+			network_set_value_by_name(objPtr, "marketId", (char*)gl_get_value_by_name(aucPtr, "market_Id", buffer, sizeof(buffer)));
+			//network_set_value_by_name(objPtr, "marketId", current_frame.market_id);
+			network_set_value_by_name(objPtr, "clrP", (char*)gl_get_value_by_name(aucPtr, "current_market.clearing_price", buffer, sizeof(buffer)));
+			network_set_value_by_name(objPtr, "pCap", (char*)gl_get_value_by_name(aucPtr, "price_cap", buffer, sizeof(buffer)));
+			network_set_value_by_name(objPtr, "marginalFraction", (char*)gl_get_value_by_name(aucPtr, "marginalFraction", buffer, sizeof(buffer)));
+			network_set_value_by_name(objPtr, "marginMode", (char*)gl_get_value_by_name(aucPtr, "marginMode", buffer, sizeof(buffer)));
+			network_set_value_by_name(objPtr, "clrQ", (char*)gl_get_value_by_name(aucPtr, "clrQ", buffer, sizeof(buffer)));
+			//object_set_value_by_name(objPtr, "sellerTotalQ", value);
+			//object_set_value_by_name(objPtr, "clrType", value);
+
 			objPtr = gl_find_next(controllers, NULL);
 		}
 		// ~ copy new data in
