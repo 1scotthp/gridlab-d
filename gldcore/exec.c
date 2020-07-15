@@ -1491,7 +1491,7 @@ void exec_mls_suspend(void)
 void exec_mls_resume(TIMESTAMP ts)
 {
 	int rv = 0;
-	rv = pthread_mute x_lock(&mls_svr_lock);
+	rv = pthread_mutex_lock(&mls_svr_lock);
 	if (rv != 0)
 	{
 		output_error("error in pthread_mutex_lock() in exec_mls_resume() (error %i)", rv);

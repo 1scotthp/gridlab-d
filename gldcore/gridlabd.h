@@ -2048,7 +2048,7 @@ inline const char * const boolToString(bool b)
   return b ? "true" : "false";
 }
 
-class GLDBuffer {//should make this a singleton?
+class GLDBuffer: gld_object {//should make this a singleton?
 public:
 	gld_string GLDOutBuf;
 	gld_string GLDInBuf;
@@ -2061,6 +2061,12 @@ public:
 	};
 
 	inline void addDataOutBuf(OBJECT *obj, PROPERTYNAME name, char *value){
+		gld_string *message = new gld_string(obj->name);
+		*message = *message + delim + name + value;
+		addMsgOutBuf(*message);
+	}
+
+	inline void addDataOutBuf(OBJECT *obj, PROPERTYNAME name, double value){
 		gld_string *message = new gld_string(obj->name);
 		*message = *message + delim + name + value;
 		addMsgOutBuf(*message);
@@ -2121,11 +2127,22 @@ inline int network_set_value_by_name(OBJECT *obj, PROPERTYNAME name, char *value
 	}
 }
 
+/** Set the value of a property in an object
+	@see object_set_value_by_name()
+ **/
+inline int network_set_value_by_name(OBJECT *obj, PROPERTYNAME name, double value){
+	if(false){
+		*callback->properties.set_value_by_name;
+	} else {//send over network
+		buf->addDataOutBuf(obj, name, value);
+	}
+}
+
 inline void checkInBuf(){
 	gld_string a(buf->GLDInBuf);
 	while(!buf->GLDInBuf.empty()){
 		//if its bid, find the auction object and call netPktArrived
-		//otherwise do gl_set_value_by_name
+		//otherwise do gl_set_value_by_name (unless properties modified directly from omnet++)
 	}
 }
 
