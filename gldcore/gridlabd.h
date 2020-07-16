@@ -2048,7 +2048,7 @@ inline const char * const boolToString(bool b)
   return b ? "true" : "false";
 }
 
-class GLDBuffer: gld_object {//should make this a singleton?
+class GLDBuffer: gld_object {
 public:
 	gld_string GLDOutBuf;
 	gld_string GLDInBuf;
