@@ -83,11 +83,13 @@ auction::auction(MODULE *module)
 			oclass->trl = TRL_QUALIFIED;
 
 		if (gl_publish_variable(oclass,
+			PT_char1024, "GLDInBuf", PADDR(GLDInBuf),
+			PT_char1024, "GLDOutBuf", PADDR(GLDOutBuf),
 			PT_char32, "unit", PADDR(unit), PT_DESCRIPTION, "unit of quantity",
 			PT_double, "period[s]", PADDR(dPeriod), PT_DESCRIPTION, "interval of time between market clearings",
 			PT_double, "latency[s]", PADDR(dLatency), PT_DESCRIPTION, "latency between market clearing and delivery", 
 			PT_int64, "market_id", PADDR(market_id), PT_ACCESS, PA_REFERENCE, PT_DESCRIPTION, "unique identifier of market clearing",
-/**/		PT_object, "network", PADDR(network), PT_DESCRIPTION, "the comm network used by object to talk to the market (if any)",
+			PT_object, "network", PADDR(network), PT_DESCRIPTION, "the comm network used by object to talk to the market (if any)",
 			PT_bool, "verbose", PADDR(verbose), PT_DESCRIPTION, "enable verbose auction operations",
 			PT_object, "linkref", PADDR(linkref), PT_DEPRECATED, PT_DESCRIPTION, "reference to link object that has demand as power_out (only used when not all loads are bidding)",
 			PT_double, "pricecap", PADDR(pricecap), PT_DEPRECATED, PT_DESCRIPTION, "the maximum price (magnitude) allowed",
@@ -219,6 +221,7 @@ int auction::create(void)
 	memcpy(this,defaults,sizeof(auction));
 	lasthr = thishr = -1;
 	verbose = 0;
+	GLDOutBuf = 0;
 	use_future_mean_price = 0;
 	pricecap = 0;
 	warmup = 1;
@@ -749,6 +752,7 @@ TIMESTAMP auction::pop_market_frame(TIMESTAMP t1){
 /* Presync is called when the clock needs to advance on the first top-down pass */
 TIMESTAMP auction::presync(TIMESTAMP t0, TIMESTAMP t1)
 {
+	netPktArrived();
 	if (clearat==TS_ZERO)
 	{
 		clearat = nextclear();
@@ -1707,5 +1711,26 @@ EXPORT TIMESTAMP sync_auction(OBJECT *obj, TIMESTAMP t1, PASSCONFIG pass)
 		return t2;
 	}
 	SYNC_CATCHALL(auction);
+}
+
+gld_string auction::inBuffer = *(new gld_string());
+gld_string auction::outBuffer = *(new gld_string());
+//char1024 auction::GLDInBuf = '\0';
+//char1024 auction::GLDOutBuf = '\0';
+
+void auction::addMsgOutBuf(gld_string &message){
+	inBuffer = inBuffer + *msgDelim + message;
+	GLDOutBuf = inBuffer.get_buffer_non_const();
+}
+
+void auction::addDataOutBuf(OBJECT *obj, PROPERTYNAME name, char *value){
+	gld_string *message = new gld_string(obj->name);
+	*message = *message + delim + name + value;
+	addMsgOutBuf(*message);
+}
+void auction::addDataOutBuf(OBJECT *obj, PROPERTYNAME name, double value){
+	gld_string *message = new gld_string(obj->name);
+	*message = *message + delim + name + value;
+	addMsgOutBuf(*message);
 }
 
