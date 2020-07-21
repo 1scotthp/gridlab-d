@@ -2120,7 +2120,8 @@ inline int network_set_value_by_name(OBJECT *obj, PROPERTYNAME name, char *value
 		OBJECT *objPtr = gl_find_next(auction,NULL);
 
 		GLDBase *a;
-		a->addDataOutBuf(obj, name, value);
+		FUNCTIONADDR add;
+		add = (FUNCTIONADDR)gl_get_function(objPtr, "addDataOutBuf");
 	}
 }
 

@@ -188,7 +188,7 @@ public:
 
 	void addDataOutBuf(OBJECT *obj, PROPERTYNAME name, char *value);
 
-	void addDataOutBuf(OBJECT *obj, PROPERTYNAME name, double value);
+	//void addDataOutBuf(OBJECT *obj, PROPERTYNAME name, double value);
 
 };
 

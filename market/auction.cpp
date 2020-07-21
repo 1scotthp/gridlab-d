@@ -198,6 +198,7 @@ auction::auction(MODULE *module)
 				sprintf(msg, "unable to publish properties in %s",__FILE__);
 				throw msg;
 			}
+		gl_publish_function(oclass,	"addDataOutBuf", (FUNCTIONADDR)addDataOutBuf);
 		gl_publish_function(oclass,	"submit_bid_state", (FUNCTIONADDR)submit_bid_state);
 		gl_publish_function(oclass, "get_market_for_time", (FUNCTIONADDR)get_market_for_time);
 		gl_publish_function(oclass, "register_participant", (FUNCTIONADDR)register_participant);
@@ -1728,9 +1729,9 @@ void auction::addDataOutBuf(OBJECT *obj, PROPERTYNAME name, char *value){
 	*message = *message + delim + name + value;
 	addMsgOutBuf(*message);
 }
-void auction::addDataOutBuf(OBJECT *obj, PROPERTYNAME name, double value){
+/*void auction::addDataOutBuf(OBJECT *obj, PROPERTYNAME name, double value){
 	gld_string *message = new gld_string(obj->name);
 	*message = *message + delim + name + value;
 	addMsgOutBuf(*message);
-}
+}*/
 
