@@ -18,7 +18,6 @@
 #include "supervisory_control.h"
 
 double bid_offset = 0.0001;
-char* buf = '\0';
 
 EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
 {

@@ -2128,7 +2128,7 @@ inline int network_set_value_by_name(OBJECT *obj, PROPERTYNAME name, char *value
 	@see object_set_value_by_name()
  **/
 inline int network_set_value_by_name(OBJECT *obj, PROPERTYNAME name, double value){
-	if(false){
+	if(false){//same implementation as gl_set_value_by_name in this case
 		*callback->properties.set_value_by_name;
 	} else {//send over network
 		FINDLIST *auction = NULL;gl_find_objects(FL_NEW,FT_CLASS,SAME,"auction",FT_END);
@@ -2139,6 +2139,9 @@ inline int network_set_value_by_name(OBJECT *obj, PROPERTYNAME name, double valu
 	}
 }
 
+/** Checks GLDInBuf for messages from Omnet++
+ *
+ */
 inline void checkInBuf(){
 	FINDLIST *auction = NULL;gl_find_objects(FL_NEW,FT_CLASS,SAME,"auction",FT_END);
 	OBJECT *objPtr = gl_find_next(auction,NULL);
