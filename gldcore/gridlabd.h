@@ -2077,7 +2077,9 @@ GLDBuffer *buf = new GLDBuffer();
 
 class GLDBase {
 public:
-	virtual int submitImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) = 0;
+	inline virtual int submitImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
+		return this->submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
+	}
 	virtual int submit_nolockImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) = 0;
 
 	inline void netPktArrived(){
