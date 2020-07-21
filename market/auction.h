@@ -155,9 +155,8 @@ private:
 	FILE *curve_file;
 	int64 curve_log_count;
 public:
-	int submitImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id);
-private:
-	int submit_nolockImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id);
+	int submitImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) override;
+	int submit_nolockImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) override;
 public:
 	TIMESTAMP nextclear() const;
 private:

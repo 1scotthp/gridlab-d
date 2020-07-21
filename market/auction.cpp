@@ -87,7 +87,7 @@ auction::auction(MODULE *module)
 			PT_char1024, "GLDOutBuf", PADDR(GLDOutBuf),
 			PT_char32, "unit", PADDR(unit), PT_DESCRIPTION, "unit of quantity",
 			PT_double, "period[s]", PADDR(dPeriod), PT_DESCRIPTION, "interval of time between market clearings",
-			PT_double, "latency[s]", PADDR(dLatency), PT_DESCRIPTION, "latency between market clearing and delivery", 
+			PT_double, "latency[s]", PADDR(dLatency), PT_DESCRIPTION, "latency between market clearing and delivery",
 			PT_int64, "market_id", PADDR(market_id), PT_ACCESS, PA_REFERENCE, PT_DESCRIPTION, "unique identifier of market clearing",
 			PT_object, "network", PADDR(network), PT_DESCRIPTION, "the comm network used by object to talk to the market (if any)",
 			PT_bool, "verbose", PADDR(verbose), PT_DESCRIPTION, "enable verbose auction operations",

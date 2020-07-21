@@ -2070,7 +2070,6 @@ public:
 	virtual void addDataOutBuf(OBJECT *obj, PROPERTYNAME name, char* value) = 0;
 
 	virtual int submitImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) = 0;
-	virtual int submit_nolockImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) = 0;
 
 	inline void netPktArrived(){
 		gl_output("correct");
@@ -2107,6 +2106,7 @@ public:
 			submit_nolockImpl(from, quantity, real_price, key, state, rebid, mkt_id);
 		}
 	};
+	virtual int submit_nolockImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) = 0;
 };
 
 /** Set the value of a property in an object
@@ -2128,19 +2128,27 @@ inline int network_set_value_by_name(OBJECT *obj, PROPERTYNAME name, char *value
 	@see object_set_value_by_name()
  **/
 inline int network_set_value_by_name(OBJECT *obj, PROPERTYNAME name, double value){
-/*	if(false){
+	if(false){
 		*callback->properties.set_value_by_name;
 	} else {//send over network
-		GLDBase:addDataOutBuf(obj, name, value);
-	}*/
+		FINDLIST *auction = NULL;gl_find_objects(FL_NEW,FT_CLASS,SAME,"auction",FT_END);
+		OBJECT *objPtr = gl_find_next(auction,NULL);
+
+		GLDBase *a;
+		//a->addDataOutBuf(obj, name, value);
+	}
 }
 
 inline void checkInBuf(){
-	/*gld_string a(buf->inBuffer);
-	while(!buf->inBuffer.empty()){
+	FINDLIST *auction = NULL;gl_find_objects(FL_NEW,FT_CLASS,SAME,"auction",FT_END);
+	OBJECT *objPtr = gl_find_next(auction,NULL);
+
+	GLDBase *a;
+	while(!a->inBuffer.empty()){
+
 		//if its bid, find the auction object and call netPktArrived
 		//otherwise do gl_set_value_by_name (unless properties modified directly from omnet++)
-	}*/
+	}
 }
 
 static PROPERTYSTRUCT nullpstruct;
