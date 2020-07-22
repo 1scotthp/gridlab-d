@@ -11,7 +11,6 @@
 #define _auction_H
 
 #include <stdarg.h>
-#include "gridlabd.h"
 #include "market.h"
 #include "bid.h"
 #include "curve.h"
@@ -174,22 +173,8 @@ public:
 	static CLASS *oclass;
 	static auction *defaults;
 
-	//static CLASS *oclass;
-	static gld_string inBuffer;
-	static gld_string outBuffer;
-
-	char1024 GLDInBuf;
 	char1024 GLDOutBuf;
-
-	gld_string *delim = new gld_string("*@*");
-	gld_string *msgDelim = new gld_string("%@%");
-
-	void addMsgOutBuf(gld_string &message);
-
-	void addDataOutBuf(OBJECT *obj, PROPERTYNAME name, char *value);
-
-	//void addDataOutBuf(OBJECT *obj, PROPERTYNAME name, double value);
-
+	char1024 GLDInBuf;
 };
 
 EXPORT int64 get_market_for_time(OBJECT *obj, TIMESTAMP ts);

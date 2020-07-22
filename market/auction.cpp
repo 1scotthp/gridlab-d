@@ -26,6 +26,8 @@ uint32 auction::statistic_count = 0;
 static PASSCONFIG passconfig = PC_PRETOPDOWN|PC_POSTTOPDOWN;
 static PASSCONFIG clockpass = PC_POSTTOPDOWN;
 
+class GLDBase;
+
 EXPORT int64 get_market_for_time(OBJECT *obj, TIMESTAMP ts){
 	auction *pAuc = 0;
 	TIMESTAMP market_time = 0;
@@ -198,7 +200,6 @@ auction::auction(MODULE *module)
 				sprintf(msg, "unable to publish properties in %s",__FILE__);
 				throw msg;
 			}
-		gl_publish_function(oclass,	"addDataOutBuf", (FUNCTIONADDR)addDataOutBuf);
 		gl_publish_function(oclass,	"submit_bid_state", (FUNCTIONADDR)submit_bid_state);
 		gl_publish_function(oclass, "get_market_for_time", (FUNCTIONADDR)get_market_for_time);
 		gl_publish_function(oclass, "register_participant", (FUNCTIONADDR)register_participant);
@@ -1714,24 +1715,5 @@ EXPORT TIMESTAMP sync_auction(OBJECT *obj, TIMESTAMP t1, PASSCONFIG pass)
 	SYNC_CATCHALL(auction);
 }
 
-gld_string auction::inBuffer = *(new gld_string());
-gld_string auction::outBuffer = *(new gld_string());
-//char1024 auction::GLDInBuf = '\0';
-//char1024 auction::GLDOutBuf = '\0';
 
-void auction::addMsgOutBuf(gld_string &message){
-	inBuffer = inBuffer + *msgDelim + message;
-	GLDOutBuf = inBuffer.get_buffer_non_const();
-}
-
-void auction::addDataOutBuf(OBJECT *obj, PROPERTYNAME name, char *value){
-	gld_string *message = new gld_string(obj->name);
-	*message = *message + delim + name + value;
-	addMsgOutBuf(*message);
-}
-/*void auction::addDataOutBuf(OBJECT *obj, PROPERTYNAME name, double value){
-	gld_string *message = new gld_string(obj->name);
-	*message = *message + delim + name + value;
-	addMsgOutBuf(*message);
-}*/
 
