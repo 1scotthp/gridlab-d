@@ -83,6 +83,8 @@ auction::auction(MODULE *module)
 			oclass->trl = TRL_QUALIFIED;
 
 		if (gl_publish_variable(oclass,
+				PT_char1024, "GLDOutBuf", PADDR(GLDOutBuf),
+				PT_char1024, "GLDInBuf", PADDR(GLDInBuf),
 			PT_char32, "unit", PADDR(unit), PT_DESCRIPTION, "unit of quantity",
 			PT_double, "period[s]", PADDR(dPeriod), PT_DESCRIPTION, "interval of time between market clearings",
 			PT_double, "latency[s]", PADDR(dLatency), PT_DESCRIPTION, "latency between market clearing and delivery", 
