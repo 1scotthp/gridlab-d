@@ -1713,9 +1713,9 @@ EXPORT TIMESTAMP sync_auction(OBJECT *obj, TIMESTAMP t1, PASSCONFIG pass)
 	SYNC_CATCHALL(auction);
 }
 
-gld_string auction::inBuffer = *(new gld_string());
+gld_string auction::inBuffer = *(new gld_string());opk
 gld_string auction::outBuffer = *(new gld_string());
-//char1024 auction::GLDInBuf = '\0';
+//char1024 auction::GLDInBuf = '\0';kj'jp
 //char1024 auction::GLDOutBuf = '\0';
 
 void auction::addMsgOutBuf(gld_string &message){
