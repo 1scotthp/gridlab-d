@@ -2119,7 +2119,7 @@ inline int network_set_value_by_name(OBJECT *obj, PROPERTYNAME name, char *value
 		FINDLIST *auction = NULL;gl_find_objects(FL_NEW,FT_CLASS,SAME,"auction",FT_END);
 		OBJECT *objPtr = gl_find_next(auction,NULL);
 
-		GLDBase *a;
+		GLDBase *a = *objPtr;
 		a->addDataOutBuf(obj, name, value);
 	}
 }
@@ -2134,7 +2134,7 @@ inline int network_set_value_by_name(OBJECT *obj, PROPERTYNAME name, double valu
 		FINDLIST *auction = NULL;gl_find_objects(FL_NEW,FT_CLASS,SAME,"auction",FT_END);
 		OBJECT *objPtr = gl_find_next(auction,NULL);
 
-		GLDBase *a;
+		GLDBase *a = *objPtr;
 		//a->addDataOutBuf(obj, name, value);
 	}
 }
@@ -2146,7 +2146,7 @@ inline void checkInBuf(){
 	FINDLIST *auction = NULL;gl_find_objects(FL_NEW,FT_CLASS,SAME,"auction",FT_END);
 	OBJECT *objPtr = gl_find_next(auction,NULL);
 
-	GLDBase *a;
+	GLDBase *a = *objPtr;
 	while(!a->inBuffer.empty()){
 
 		//if its bid, find the auction object and call netPktArrived
