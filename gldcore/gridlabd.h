@@ -2116,10 +2116,10 @@ inline int network_set_value_by_name(OBJECT *obj, PROPERTYNAME name, char *value
 	if(false){
 		*callback->properties.set_value_by_name;
 	} else {//send over network
-		FINDLIST *auction = NULL;gl_find_objects(FL_NEW,FT_CLASS,SAME,"auction",FT_END);
+		FINDLIST *auction = gl_find_objects(FL_NEW,FT_CLASS,SAME,"auction",FT_END);
 		OBJECT *objPtr = gl_find_next(auction,NULL);
 
-		GLDBase *a = *objPtr;
+		GLDBase *a;
 		a->addDataOutBuf(obj, name, value);
 	}
 }
@@ -2131,10 +2131,10 @@ inline int network_set_value_by_name(OBJECT *obj, PROPERTYNAME name, double valu
 	if(false){//same implementation as gl_set_value_by_name in this case
 		*callback->properties.set_value_by_name;
 	} else {//send over network
-		FINDLIST *auction = NULL;gl_find_objects(FL_NEW,FT_CLASS,SAME,"auction",FT_END);
+		FINDLIST *auction = gl_find_objects(FL_NEW,FT_CLASS,SAME,"auction",FT_END);
 		OBJECT *objPtr = gl_find_next(auction,NULL);
 
-		GLDBase *a = *objPtr;
+		GLDBase *a;
 		//a->addDataOutBuf(obj, name, value);
 	}
 }
@@ -2143,10 +2143,10 @@ inline int network_set_value_by_name(OBJECT *obj, PROPERTYNAME name, double valu
  *
  */
 inline void checkInBuf(){
-	FINDLIST *auction = NULL;gl_find_objects(FL_NEW,FT_CLASS,SAME,"auction",FT_END);
+	FINDLIST *auction = gl_find_objects(FL_NEW,FT_CLASS,SAME,"auction",FT_END);
 	OBJECT *objPtr = gl_find_next(auction,NULL);
 
-	GLDBase *a = *objPtr;
+	GLDBase *a;
 	while(!a->inBuffer.empty()){
 
 		//if its bid, find the auction object and call netPktArrived
