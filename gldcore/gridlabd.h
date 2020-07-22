@@ -1392,6 +1392,7 @@ public: // status accessors
 public: // read accessors
 	/// get a pointer to the string buffer
 	inline const char* get_buffer(void) { return buf ? buf->str : NULL; };
+	inline char* get_buffer_non_const(void) { return buf ? buf->str : NULL; };
 	/// get the size of the string buffer (as allocated)
 	inline size_t get_size(void) { return buf ? buf->len : -1; };
 	/// get the length of the string (up to the null termination)
@@ -2021,7 +2022,6 @@ static inline gld_object* get_object(char *n)
 }
 
 
-
 typedef int64 KEY;
 
 typedef enum {
@@ -2045,140 +2045,140 @@ BIDDERSTATE& charToState(char *s){
 
 inline const char * const boolToString(bool b)
 {
-  return b ? "true" : "false";
+	return b ? "true" : "false";
 }
 
-class GLDBuffer: gld_object {
-public:
-	gld_string GLDOutBuf;
-	gld_string GLDInBuf;
-
-	gld_string *delim = new gld_string("*@*");
-	gld_string *msgDelim = new gld_string("%@%");
-
-	inline void addMsgOutBuf(gld_string &message){
-		GLDOutBuf = GLDOutBuf + msgDelim + message;
-	};
-
-	inline void addDataOutBuf(OBJECT *obj, PROPERTYNAME name, char *value){
-		gld_string *message = new gld_string(obj->name);
-		*message = *message + delim + name + value;
-		addMsgOutBuf(*message);
-	}
-
-	inline void addDataOutBuf(OBJECT *obj, PROPERTYNAME name, double value){
-		gld_string *message = new gld_string(obj->name);
-		*message = *message + delim + name + value;
-		addMsgOutBuf(*message);
-	}
-};
-
-GLDBuffer *buf = new GLDBuffer();
-
-static PASSCONFIG passconfigh = PC_PRETOPDOWN|PC_POSTTOPDOWN;
-static PASSCONFIG clockpassh = PC_POSTTOPDOWN;
 
 class GLDBase {
-public:
-	char1024 GLDOutBuf;
-	char1024 GLDInBuf;
-	static CLASS *oclass;
-	static GLDBase *defaults;
-public:
-	inline GLDBase(){};
-	inline virtual int submitImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
-		return this->submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
-	}
-	virtual int submit_nolockImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) = 0;
+	public:
 
-	inline void netPktArrived(){
-		while(!buf->GLDInBuf.empty()){
-			gld_string line = buf->GLDInBuf.getStrUntilDelim(*buf->msgDelim);
+		//virtual ~GLDBase();
+		static char1024 GLDOutBuf;
+		static char1024 GLDInBuf;
 
-			char *from = buf->GLDInBuf.getCharUntilDelim(*buf->delim);
-			double quantity = atof(buf->GLDInBuf.getCharUntilDelim(*buf->delim));
-			double real_price = atof(buf->GLDInBuf.getCharUntilDelim(*buf->delim));
-			KEY key = atoll(buf->GLDInBuf.getCharUntilDelim(*buf->delim));
-			BIDDERSTATE state = charToState((buf->GLDInBuf.getCharUntilDelim(*buf->delim)));
-			bool rebid = ('1' == *buf->GLDInBuf.getCharUntilDelim(*buf->delim));
-			int64 mkt_id = atoll(buf->GLDInBuf.getCharUntilDelim(*buf->delim));
-			submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
-		}
-	};
-	inline int AM_submit(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
-		if(false){
-			return submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
-		} else {
-			return AM_submit_nolock(from, quantity, real_price, key, state, rebid, mkt_id);
-		}
-	};
+		static gld_string *inBuffer;
+		static gld_string *outBuffer;
 
-	inline int AM_submit_nolock(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
-		if(true){
-			double dblState = state;
-			gld_string *message = new gld_string(from);
-			*message = *message + buf->delim + quantity + buf->delim + real_price + buf->delim + key +
-					buf->delim + dblState + buf->delim + boolToString(rebid) + buf->delim + mkt_id;
-			buf->addMsgOutBuf(*message);
-			return 0;
-		} else {
-			submit_nolockImpl(from, quantity, real_price, key, state, rebid, mkt_id);
-		}
-	};
+		static gld_string *delim;
+		static gld_string *msgDelim;
 
-	GLDBase(MODULE *module){
-		if(oclass = NULL){
-			oclass = gl_register_class(module,"GLDBase",sizeof(GLDBase),passconfigh|PC_AUTOLOCK);
-		}
+		void addMsgOutBuf(gld_string &message);
+		void addDataOutBuf(OBJECT *obj, PROPERTYNAME name, char *value);
+		void addDataOutBuf(OBJECT *obj, PROPERTYNAME name, double value);
 
-		if(oclass == NULL){
-			throw "unable to register class auction";
-		} else {
-			oclass->trl = TRL_QUALIFIED;
-		}
+		virtual int submitImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) = 0;
+		virtual int submit_nolockImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) = 0;
 
-		if(gl_publish_variable(oclass,
-				PT_char1024, "GLDOutBuf", PADDR(GLDOutBuf),
-				NULL) < 1){
-			char msg[256];
-			printf(msg, "unable to publish properties in %s",__FILE__);
-			throw msg;
-		}
+		void netPktArrived();
 
-	};
-	inline int create(void);
-	inline int init(OBJECT *parent){return 1;};
-	inline int isa(char *classname){return strcmp(classname,"GLDBase")==0;};
-	inline TIMESTAMP presync(TIMESTAMP t0, TIMESTAMP t1);
-	inline TIMESTAMP sync(TIMESTAMP t0, TIMESTAMP t1);
-	inline TIMESTAMP postsync(TIMESTAMP t0, TIMESTAMP t1);
+		int AM_submit(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id);
+
+		int AM_submit_nolock(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id);
 };
 
-/** Set the value of a property in an object
-	@see object_set_value_by_name()
- **/
-inline int network_set_value_by_name(OBJECT *obj, PROPERTYNAME name, char *value){
-	if(false){
-		*callback->properties.set_value_by_name;
-	} else {//send over network
-		buf->addDataOutBuf(obj, name, value);
+char1024 GLDBase::GLDInBuf = new char();
+char1024 GLDBase::GLDOutBuf = new char();
+
+gld_string *GLDBase::inBuffer = new gld_string();
+gld_string *GLDBase::outBuffer = new gld_string();
+
+gld_string *GLDBase::delim = new gld_string("%@%");
+gld_string *GLDBase::msgDelim = new gld_string("@%@");
+
+/*GLDBase::~GLDBase(){
+}*/
+
+void GLDBase::addMsgOutBuf(gld_string &message){
+	inBuffer = inBuffer + *msgDelim + message;
+	GLDOutBuf = inBuffer->get_buffer_non_const();
+
+}
+
+void GLDBase::addDataOutBuf(OBJECT *obj, PROPERTYNAME name, char *value){
+	gld_string *message = new gld_string(obj->name);
+	*message = *message + delim + name + value;
+	addMsgOutBuf(*message);
+}
+
+void GLDBase::addDataOutBuf(OBJECT *obj, PROPERTYNAME name, double value){
+	gld_string *message = new gld_string(obj->name);
+	*message = *message + delim + name + value;
+	addMsgOutBuf(*message);
+}
+
+
+
+void GLDBase::netPktArrived(){
+	//gld_string *inBuffer = new gld_string(GLDInBuf)
+	while(!inBuffer->empty()){
+		gld_string line = inBuffer->getStrUntilDelim(*msgDelim);
+
+		char *from = line.getCharUntilDelim(*delim);
+		double quantity = atof(line.getCharUntilDelim(*delim));
+		double real_price = atof(line.getCharUntilDelim(*delim));
+		KEY key = atoll(line.getCharUntilDelim(*delim));
+		BIDDERSTATE state = charToState((line.getCharUntilDelim(*delim)));
+		bool rebid = ('1' == *line.getCharUntilDelim(*delim));
+		int64 mkt_id = atoll(line.getCharUntilDelim(*delim));
+		submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
+
+		//update inBuffer
 	}
 }
 
-/** Set the value of a property in an object
-	@see object_set_value_by_name()
- **/
-inline int network_set_value_by_name(OBJECT *obj, PROPERTYNAME name, double value){
+int GLDBase::AM_submit(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
 	if(false){
-		*callback->properties.set_value_by_name;
+		return submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
+	} else {
+		return AM_submit_nolock(from, quantity, real_price, key, state, rebid, mkt_id);
+	}
+}
+
+int GLDBase::AM_submit_nolock(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
+	if(true){
+		double dblState = state;
+		gld_string *message = new gld_string(from);
+		*message = *message + delim + quantity + delim + real_price + delim + key +
+				delim + dblState + delim + boolToString(rebid) + delim + mkt_id;
+		addMsgOutBuf(*message);
+		return 0;
+	} else {
+		submit_nolockImpl(from, quantity, real_price, key, state, rebid, mkt_id);
+	}
+}
+
+inline void network_set_value_by_name(OBJECT *obj, PROPERTYNAME name, char *value){
+	if(false){
+		gl_set_value_by_name(obj, name, value);
 	} else {//send over network
-		buf->addDataOutBuf(obj, name, value);
+		//FINDLIST *auction = gl_find_objects(FL_NEW,FT_CLASS,SAME,"auction",FT_END);
+		//OBJECT *objPtr = gl_find_next(auction,NULL);
+
+		GLDBase *a;
+		a->addDataOutBuf(obj, name, value);
+
+		//FUNCTIONADDR add;
+		//add = (FUNCTIONADDR)gl_get_function(objPtr, "addDataOutBuf");
+		//(void(*)(OBJECT *, PROPERTYNAME, char *))(*add);
+	}
+}
+
+
+inline void network_set_value_by_name(OBJECT *obj, PROPERTYNAME name, double value){
+	if(false){//same implementation as gl_set_value_by_name in this case
+		//gl_set_value_by_name(obj, name, value);
+	} else {//send over network
+
+		GLDBase *a;
+		a->addDataOutBuf(obj, name, value);
 	}
 }
 
 inline void checkInBuf(){
-	gld_string a(buf->GLDInBuf);
-	while(!buf->GLDInBuf.empty()){
+
+	GLDBase *a;
+	while(!a->inBuffer->empty()){
+
 		//if its bid, find the auction object and call netPktArrived
 		//otherwise do gl_set_value_by_name (unless properties modified directly from omnet++)
 	}
