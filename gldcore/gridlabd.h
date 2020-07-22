@@ -2075,8 +2075,17 @@ public:
 
 GLDBuffer *buf = new GLDBuffer();
 
+static PASSCONFIG passconfigh = PC_PRETOPDOWN|PC_POSTTOPDOWN;
+static PASSCONFIG clockpassh = PC_POSTTOPDOWN;
+
 class GLDBase {
 public:
+	char1024 GLDOutBuf;
+	char1024 GLDInBuf;
+	static CLASS *oclass;
+	static GLDBase *defaults;
+public:
+	inline GLDBase(){};
 	inline virtual int submitImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id){
 		return this->submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
 	}
@@ -2116,6 +2125,33 @@ public:
 			submit_nolockImpl(from, quantity, real_price, key, state, rebid, mkt_id);
 		}
 	};
+
+	GLDBase(MODULE *module){
+		if(oclass = NULL){
+			oclass = gl_register_class(module,"GLDBase",sizeof(GLDBase),passconfigh|PC_AUTOLOCK);
+		}
+
+		if(oclass == NULL){
+			throw "unable to register class auction";
+		} else {
+			oclass->trl = TRL_QUALIFIED;
+		}
+
+		if(gl_publish_variable(oclass,
+				PT_char1024, "GLDOutBuf", PADDR(GLDOutBuf),
+				NULL) < 1){
+			char msg[256];
+			printf(msg, "unable to publish properties in %s",__FILE__);
+			throw msg;
+		}
+
+	};
+	inline int create(void);
+	inline int init(OBJECT *parent){return 1;};
+	inline int isa(char *classname){return strcmp(classname,"GLDBase")==0;};
+	inline TIMESTAMP presync(TIMESTAMP t0, TIMESTAMP t1);
+	inline TIMESTAMP sync(TIMESTAMP t0, TIMESTAMP t1);
+	inline TIMESTAMP postsync(TIMESTAMP t0, TIMESTAMP t1);
 };
 
 /** Set the value of a property in an object
