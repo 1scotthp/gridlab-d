@@ -2049,9 +2049,9 @@ inline const char * const boolToString(bool b)
   return b ? "true" : "false";
 }
 
-class GLDBase {
-public:
 
+class GLDBase: public gld_object{
+public:
 	gld_string inBuffer;
 	gld_string outBuffer;
 
@@ -2116,12 +2116,15 @@ inline int network_set_value_by_name(OBJECT *obj, PROPERTYNAME name, char *value
 	if(false){
 		*callback->properties.set_value_by_name;
 	} else {//send over network
-		FINDLIST *auction = NULL;gl_find_objects(FL_NEW,FT_CLASS,SAME,"auction",FT_END);
+		FINDLIST *auction = gl_find_objects(FL_NEW,FT_CLASS,SAME,"auction",FT_END);
 		OBJECT *objPtr = gl_find_next(auction,NULL);
 
-		GLDBase *a;
-		FUNCTIONADDR add;
+		GLDBase *a = *objPtr;
+		a->addDataOutBuf(obj, name, value);
+
+/*		FUNCTIONADDR add;
 		add = (FUNCTIONADDR)gl_get_function(objPtr, "addDataOutBuf");
+		(void(*)(OBJECT *, PROPERTYNAME, char *))(*add);*/
 	}
 }
 
@@ -2132,7 +2135,7 @@ inline int network_set_value_by_name(OBJECT *obj, PROPERTYNAME name, double valu
 	if(false){//same implementation as gl_set_value_by_name in this case
 		*callback->properties.set_value_by_name;
 	} else {//send over network
-		FINDLIST *auction = NULL;gl_find_objects(FL_NEW,FT_CLASS,SAME,"auction",FT_END);
+		FINDLIST *auction = gl_find_objects(FL_NEW,FT_CLASS,SAME,"auction",FT_END);
 		OBJECT *objPtr = gl_find_next(auction,NULL);
 
 		GLDBase *a;
@@ -2144,7 +2147,7 @@ inline int network_set_value_by_name(OBJECT *obj, PROPERTYNAME name, double valu
  *
  */
 inline void checkInBuf(){
-	FINDLIST *auction = NULL;gl_find_objects(FL_NEW,FT_CLASS,SAME,"auction",FT_END);
+	FINDLIST *auction = gl_find_objects(FL_NEW,FT_CLASS,SAME,"auction",FT_END);
 	OBJECT *objPtr = gl_find_next(auction,NULL);
 
 	GLDBase *a;
