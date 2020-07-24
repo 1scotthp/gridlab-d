@@ -2055,34 +2055,36 @@ inline const char * const boolToString(bool b)
 
 
 class GLDBase {
-	public:
+protected:
+	GLDBase(): GLDOutBuf(new char()), GLDInBuf(new char()) { }
+public:
 
-		inline char1024 GLDOutBuf = new char();
-		inline char1024 GLDInBuf = new char();
+	char1024 GLDOutBuf;
+	char1024 GLDInBuf;
 
-		static gld_string *inBuffer;
-		static gld_string *outBuffer;
+	static gld_string *inBuffer;
+	static gld_string *outBuffer;
 
-		static gld_string *delim;
-		static gld_string *msgDelim;
+	static gld_string *delim;
+	static gld_string *msgDelim;
 
-		virtual ~GLDBase() = 0;
+	virtual ~GLDBase() = 0;
 
-		//static
-		void addMsgOutBuf(gld_string &message);
-		void addDataOutBuf(OBJECT *obj, PROPERTYNAME name, char *value);
-		void addDataOutBuf(OBJECT *obj, PROPERTYNAME name, double value);
+	//static
+	void addMsgOutBuf(gld_string &message);
+	void addDataOutBuf(OBJECT *obj, PROPERTYNAME name, char *value);
+	void addDataOutBuf(OBJECT *obj, PROPERTYNAME name, double value);
 
-		virtual int submitImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) = 0;
-		virtual int submit_nolockImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) = 0;
+	virtual int submitImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) = 0;
+	virtual int submit_nolockImpl(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id) = 0;
 
-		void netPktArrived();
+	void netPktArrived();
 
-		int AM_submit(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id);
+	int AM_submit(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id);
 
-		int AM_submit_nolock(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id);
+	int AM_submit_nolock(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id);
 
-/*		GLDBase(MODULE *module);
+	/*		GLDBase(MODULE *module);
 		int create(void);
 		int init(OBJECT *parent);
 		int isa(char *classname);
@@ -2117,8 +2119,7 @@ GLDBase::~GLDBase(){
 
 void GLDBase::addMsgOutBuf(gld_string &message){
 	inBuffer = inBuffer + *msgDelim + message;
-	GLDOutBuf = inBuffer->get_buffer_non_const();//only needs to happen on last message
-
+	GLDOutBuf = inBuffer->get_buffer_non_const();//technically only needs to happen on last message
 }
 
 void GLDBase::addDataOutBuf(OBJECT *obj, PROPERTYNAME name, char *value){
