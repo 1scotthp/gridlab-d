@@ -88,7 +88,7 @@ auction::auction(MODULE *module)
 
 		if (gl_publish_variable(oclass,
 				PT_char1024, "GLDOutBuf", PADDR(GLDBase::GLDOutBuf),
-				PT_char1024, "GLDInBuf", PADDR(GLDBase::GLDInBuf),
+				//PT_char1024, "GLDInBuf", PADDR(GLDBase::GLDInBuf),
 			PT_char32, "unit", PADDR(unit), PT_DESCRIPTION, "unit of quantity",
 			PT_double, "period[s]", PADDR(dPeriod), PT_DESCRIPTION, "interval of time between market clearings",
 			PT_double, "latency[s]", PADDR(dLatency), PT_DESCRIPTION, "latency between market clearing and delivery", 
@@ -1465,6 +1465,7 @@ void auction::clear_market(void)
 			network_set_value_by_name(objPtr, "marginalFraction", current_frame.marginal_frac);
 			//network_set_value_by_name(objPtr, "marginMode", (char*)gl_get_value_by_name(aucPtr, "marginMode", buffer, sizeof(buffer)));
 			network_set_value_by_name(objPtr, "clrQ", current_frame.clearing_quantity);
+			network_set_value_by_name(objPtr, "last_p", current_frame.clearing_price);
 
 			//could just copy a marketframe
 

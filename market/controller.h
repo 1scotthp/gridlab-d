@@ -87,7 +87,7 @@ public:
 	KEY lastmkt_id;
 	KEY lastbid_id2;
 	KEY lastmkt_id2;
-	double last_p;
+	//double last_p;
 	double last_q;
 	double P_ON,P_OFF,P_ONLOCK,P_OFFLOCK;  //Ebony
 	double mu0, mu1; //Ebony
@@ -151,6 +151,7 @@ public:
 	//enumeration marginMode;
 	double clrQ;
 	double clrQ2;
+	double last_p;
 
 private:
 	TIMESTAMP next_run;

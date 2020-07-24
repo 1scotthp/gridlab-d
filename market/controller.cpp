@@ -209,6 +209,18 @@ int controller::create(){
 	controller_bid2.rebid = false;
 	controller_bid2.bid_accepted = true;
 	bid_id = -1;
+
+	FINDLIST *auctions = NULL;
+	auctions = gl_find_objects(FL_NEW,FT_CLASS,SAME,"auction",FT_END);
+	auction *aucPtr = OBJECTDATA(auctions, auction);
+
+	int64 marketId = aucPtr->current_frame.market_id;
+	int64 market2Id = 0;
+	double clrP = aucPtr->init_price;
+	double pCap = aucPtr->pricecap;
+	double marginalFraction = 0;
+	double clrQ = aucPtr->current_frame.clearing_quantity;
+
 	return 1;
 }
 
@@ -1021,7 +1033,8 @@ TIMESTAMP controller::sync(TIMESTAMP t0, TIMESTAMP t1){
 	OBJECT *hdr = OBJECTHDR(this);
 	char mktname[1024];
 	char ctrname[1024];
-/*	double avgP = 0.0;
+	avgP = 2;//try out
+	/*
 	double stdP = 0.0;
 	int64 marketId = 0;
 	int64 market2Id = 0;
