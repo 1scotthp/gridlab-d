@@ -117,7 +117,7 @@ auction::auction(MODULE *module)
 			PT_double, "init_stdev", PADDR(init_stdev),
 			PT_double, "future_mean_price", PADDR(future_mean_price),
 			PT_bool, "use_future_mean_price", PADDR(use_future_mean_price),
-			PT_bool, "sendNetwork", true,
+			PT_bool, "sendNetwork", PADDR(sendNetwork),
 
 			PT_timestamp, "current_market.start_time", PADDR(current_frame.start_time),
 			PT_timestamp, "current_market.end_time", PADDR(current_frame.end_time),
@@ -230,6 +230,7 @@ int auction::create(void)
 	warmup = 1;
 	market_id = 1;
 	clearing_scalar = 0.5;
+	sendNetwork = 1;
 	/* process dynamic statistics */
 	if(statistic_check == -1){
 		int rv;

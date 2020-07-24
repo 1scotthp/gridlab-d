@@ -2056,11 +2056,14 @@ inline const char * const boolToString(bool b)
 
 class GLDBase {
 protected:
-	GLDBase(): GLDOutBuf(new char()), GLDInBuf(new char()) { }
+	GLDBase(): GLDOutBuf(new char()), GLDInBuf(new char()) {}
 public:
 
 	char1024 GLDOutBuf;
 	char1024 GLDInBuf;
+
+	//static char1024 GLDO;
+	//static char1024 GLDI;
 
 	static gld_string *inBuffer;
 	static gld_string *outBuffer;
@@ -2119,7 +2122,7 @@ GLDBase::~GLDBase(){
 
 void GLDBase::addMsgOutBuf(gld_string &message){
 	inBuffer = inBuffer + *msgDelim + message;
-	GLDOutBuf = inBuffer->get_buffer_non_const();//technically only needs to happen on last message
+	GLDOutBuf = inBuffer->get_buffer_non_const();//only needs to happen on last message
 }
 
 void GLDBase::addDataOutBuf(OBJECT *obj, PROPERTYNAME name, char *value){
@@ -2167,7 +2170,7 @@ int GLDBase::AM_submit_nolock(char *from, double quantity, double real_price, KE
 		*message = *message + delim + quantity + delim + real_price + delim + key +
 				delim + dblState + delim + boolToString(rebid) + delim + mkt_id;
 		addMsgOutBuf(*message);
-		return 0;
+		return 1;
 	} else {
 		return submit_nolockImpl(from, quantity, real_price, key, state, rebid, mkt_id);
 	}
