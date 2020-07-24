@@ -71,6 +71,10 @@ EXPORT int64 register_participant(OBJECT *mkt, OBJECT *part)
 	return 1;
 }
 
+//char1024 auction::GLDOut = new char();
+//char1024 auction::GLDIn = new char();
+
+
 /* Class registration is only called once to register the class with the core */
 auction::auction(MODULE *module)
 {
@@ -83,10 +87,10 @@ auction::auction(MODULE *module)
 			oclass->trl = TRL_QUALIFIED;
 
 		if (gl_publish_variable(oclass,
-				PT_char1024, "GLDOutBuf", PADDR(GLDOutBuf),
-				PT_char1024, "GLDInBuf", PADDR(GLDInBuf),
-			//PT_char32, "unit", PADDR(unit), PT_DESCRIPTION, "unit of quantity",
-			//PT_double, "period[s]", PADDR(dPeriod), PT_DESCRIPTION, "interval of time between market clearings",
+				PT_char1024, "GLDOutBuf", PADDR(GLDBase::GLDOutBuf),
+				PT_char1024, "GLDInBuf", PADDR(GLDBase::GLDInBuf),
+			PT_char32, "unit", PADDR(unit), PT_DESCRIPTION, "unit of quantity",
+			PT_double, "period[s]", PADDR(dPeriod), PT_DESCRIPTION, "interval of time between market clearings",
 			PT_double, "latency[s]", PADDR(dLatency), PT_DESCRIPTION, "latency between market clearing and delivery", 
 			PT_int64, "market_id", PADDR(market_id), PT_ACCESS, PA_REFERENCE, PT_DESCRIPTION, "unique identifier of market clearing",
 /**/		PT_object, "network", PADDR(network), PT_DESCRIPTION, "the comm network used by object to talk to the market (if any)",
@@ -861,6 +865,9 @@ void auction::record_curve(double bu, double su){
 	} else {
 		fflush(curve_file);
 	}
+
+	//placeHolderOut = GLDOutBuf;
+	//placeHolderIn = GLDInBuf;
 }
 
 void auction::clear_market(void)
@@ -1452,10 +1459,10 @@ void auction::clear_market(void)
 			//for each controller object, set parameters
 			//network_set_value_by_name(objPtr, "marketId", (char*)gl_get_value_by_name(aucPtr, "market_Id", buffer, sizeof(buffer)));
 			network_set_value_by_name(objPtr, "marketId", current_frame.market_id);
-			network_set_value_by_name(objPtr, "clrP", (char*)gl_get_value_by_name(aucPtr, "current_market.clearing_price", buffer, sizeof(buffer)));
-			network_set_value_by_name(objPtr, "pCap", (char*)gl_get_value_by_name(aucPtr, "price_cap", buffer, sizeof(buffer)));
+			network_set_value_by_name(objPtr, "clrP", "current_market.clearing_price");
+			network_set_value_by_name(objPtr, "pCap", current_frame.cap_ref_unrep);
 			network_set_value_by_name(objPtr, "marginalFraction", current_frame.marginal_frac);
-			network_set_value_by_name(objPtr, "marginMode", (char*)gl_get_value_by_name(aucPtr, "marginMode", buffer, sizeof(buffer)));
+			//network_set_value_by_name(objPtr, "marginMode", (char*)gl_get_value_by_name(aucPtr, "marginMode", buffer, sizeof(buffer)));
 			network_set_value_by_name(objPtr, "clrQ", current_frame.clearing_quantity);
 
 			//could just copy a marketframe
@@ -1710,4 +1717,5 @@ EXPORT TIMESTAMP sync_auction(OBJECT *obj, TIMESTAMP t1, PASSCONFIG pass)
 	}
 	SYNC_CATCHALL(auction);
 }
+
 

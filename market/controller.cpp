@@ -20,6 +20,12 @@ controller::controller(MODULE *module){
 			oclass->trl = TRL_QUALIFIED;
 
 		if (gl_publish_variable(oclass,
+				PT_int64, "marketId", PADDR(marketId),
+				PT_int64, "market2Id", PADDR(market2Id),
+				PT_double, "clrP", PADDR(clrP),
+				PT_double, "pCap", PADDR(pCap),
+				PT_double, "marginalFraction", PADDR(marginalFraction),
+				PT_double, "clrQ", PADDR(clrQ),
 			PT_enumeration, "simple_mode", PADDR(simplemode),
 				PT_KEYWORD, "NONE", (enumeration)SM_NONE,
 				PT_KEYWORD, "HOUSE_HEAT", (enumeration)SM_HOUSE_HEAT,
@@ -149,23 +155,23 @@ controller::controller(MODULE *module){
 			PT_double, "proxy_seller_total_quantity", PADDR(proxy_seller_total_quantity),
 			PT_double, "proxy_seller_total_quantity2", PADDR(proxy_seller_total_quantity2),
 			PT_enumeration, "proxy_margin_mode", PADDR(proxy_margin_mode),
-				PT_KEYWORD, "NORMAL", (enumeration)AM_NONE,
-				PT_KEYWORD, "DENY", (enumeration)AM_DENY,
-				PT_KEYWORD, "PROB", (enumeration)AM_PROB,
+			PT_KEYWORD, "NORMAL", (enumeration)AM_NONE,
+			PT_KEYWORD, "DENY", (enumeration)AM_DENY,
+			PT_KEYWORD, "PROB", (enumeration)AM_PROB,
 			PT_enumeration, "proxy_clearing_type", PADDR(proxy_clearing_type),
-				PT_KEYWORD, "MARGINAL_SELLER", (enumeration)CT_SELLER,
-				PT_KEYWORD, "MARGINAL_BUYER", (enumeration)CT_BUYER,
-				PT_KEYWORD, "MARGINAL_PRICE", (enumeration)CT_PRICE,
-				PT_KEYWORD, "EXACT", (enumeration)CT_EXACT,
-				PT_KEYWORD, "FAILURE", (enumeration)CT_FAILURE,
-				PT_KEYWORD, "NULL", (enumeration)CT_NULL,
+			PT_KEYWORD, "MARGINAL_SELLER", (enumeration)CT_SELLER,
+			PT_KEYWORD, "MARGINAL_BUYER", (enumeration)CT_BUYER,
+			PT_KEYWORD, "MARGINAL_PRICE", (enumeration)CT_PRICE,
+			PT_KEYWORD, "EXACT", (enumeration)CT_EXACT,
+			PT_KEYWORD, "FAILURE", (enumeration)CT_FAILURE,
+			PT_KEYWORD, "NULL", (enumeration)CT_NULL,
 			PT_enumeration, "proxy_clearing_type2", PADDR(proxy_clearing_type2),
-				PT_KEYWORD, "MARGINAL_SELLER", (enumeration)CT_SELLER,
-				PT_KEYWORD, "MARGINAL_BUYER", (enumeration)CT_BUYER,
-				PT_KEYWORD, "MARGINAL_PRICE", (enumeration)CT_PRICE,
-				PT_KEYWORD, "EXACT", (enumeration)CT_EXACT,
-				PT_KEYWORD, "FAILURE", (enumeration)CT_FAILURE,
-				PT_KEYWORD, "NULL", (enumeration)CT_NULL,
+			PT_KEYWORD, "MARGINAL_SELLER", (enumeration)CT_SELLER,
+			PT_KEYWORD, "MARGINAL_BUYER", (enumeration)CT_BUYER,
+			PT_KEYWORD, "MARGINAL_PRICE", (enumeration)CT_PRICE,
+			PT_KEYWORD, "EXACT", (enumeration)CT_EXACT,
+			PT_KEYWORD, "FAILURE", (enumeration)CT_FAILURE,
+			PT_KEYWORD, "NULL", (enumeration)CT_NULL,
 			NULL)<1) GL_THROW("unable to publish properties in %s",__FILE__);
 		memset(this,0,sizeof(controller));
 	}
@@ -1024,9 +1030,9 @@ TIMESTAMP controller::sync(TIMESTAMP t0, TIMESTAMP t1){
 	double pCap2 = 0.0;
 	double marginalFraction = 0.0;
 	double marginalFraction2 = 0.0;
-	enumeration marginMode = AM_NONE;
 	double clrQ = 0.0;
 	double clrQ2 = 0.0;*/
+	enumeration marginMode = AM_NONE;
 	double sellerTotalQ = 0.0;
 	enumeration clrType = CT_EXACT;
 	enumeration clrType2 = CT_EXACT;
@@ -1036,35 +1042,29 @@ TIMESTAMP controller::sync(TIMESTAMP t0, TIMESTAMP t1){
 	double dBand = 0.0;
 	double heatDemand = 0.0;
 	double coolDemand = 0.0;
-	/*if(bidmode != BM_PROXY){
+	if(bidmode != BM_PROXY){
 		pAvg->getp(avgP);
 		pStd->getp(stdP);
-		pMarketId->getp(marketId);
-		pClearedPrice->getp(clrP);
-		pPriceCap->getp(pCap);
-		pMarginalFraction->getp(marginalFraction);
+		//pMarketId->getp(marketId);
+		//pClearedPrice->getp(clrP);
+		//pPriceCap->getp(pCap);
+		//pMarginalFraction->getp(marginalFraction);
 		pMarginMode->getp(marginMode);
-		pClearedQuantity->getp(clrQ);
+		//pClearedQuantity->getp(clrQ);
 		pSellerTotalQuantity->getp(sellerTotalQ);
 		pClearingType->getp(clrType);
-		avgP = gl_get_double_by_name(obj, "proxy_average");
-		stdP = gl_get_double_by_name(obj, "proxy_average");
-		marketId = gl_get_int64_by_name(obj, "proxy_average");
-		clrP = gl_get_double_by_name(obj, "proxy_average");
-		pCap = gl_get_double_by_name(obj, "proxy_average");
-		marginalFraction = gl_get_double_by_name(obj, "proxy_average");
 	} else if(bidmode == BM_PROXY) {
 		avgP = pAvg->get_double();
 		stdP = pStd->get_double();
-		marketId = pMarketId->get_integer();
-		clrP = pClearedPrice->get_double();
-		pCap = pPriceCap->get_double();
-		marginalFraction = pMarginalFraction->get_double();
+		//marketId = pMarketId->get_integer();
+		//clrP = pClearedPrice->get_double();
+		//pCap = pPriceCap->get_double();
+		//marginalFraction = pMarginalFraction->get_double();
 		marginMode = pMarginMode->get_enumeration();
-		clrQ = pClearedQuantity->get_double();
+		//clrQ = pClearedQuantity->get_double();
 		sellerTotalQ = pSellerTotalQuantity->get_double();
 		clrType = pClearingType->get_enumeration();
-	}*/
+	}
 	pMonitor->getp(monitor);
 	if(control_mode == CN_RAMP || control_mode == CN_DEV_LEVEL){
 		pDemand->getp(demandP);

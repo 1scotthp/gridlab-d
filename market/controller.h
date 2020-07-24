@@ -139,6 +139,19 @@ public:
 	double last_cooling_setpoint;
 	int64 bid_id;
 
+	double avgP;
+	double stdP;
+	int64 marketId;
+	int64 market2Id;
+	double clrP;
+	double pCap;
+	double pCap2;
+	double marginalFraction;
+	double marginalFraction2;
+	//enumeration marginMode;
+	double clrQ;
+	double clrQ2;
+
 private:
 	TIMESTAMP next_run;
 	TIMESTAMP last_run;
@@ -247,19 +260,6 @@ private:
 	enumeration proxy_clearing_type;
 	enumeration proxy_clearing_type2;
 	double proxy_marginal_fraction2;
-
-	double avgP;
-	double stdP;
-	int64 marketId;
-	int64 market2Id;
-	double clrP;
-	double pCap;
-	double pCap2;
-	double marginalFraction;
-	double marginalFraction2;
-	enumeration marginMode;
-	double clrQ;
-	double clrQ2;
 
 };
 

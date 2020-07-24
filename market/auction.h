@@ -174,6 +174,13 @@ public:
 public:
 	static CLASS *oclass;
 	static auction *defaults;
+
+	//char1024 placeHolderOut;
+	//char1024 placeHolderIn;
+
+	static char1024 GLDOut;
+	static char1024 GLDIn;
+
 };
 
 EXPORT int64 get_market_for_time(OBJECT *obj, TIMESTAMP ts);

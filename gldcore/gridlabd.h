@@ -183,6 +183,11 @@ CDECL EXTERN CALLBACKS *callback INIT(NULL);
 
 #define PADDR(X) ((char*)&(this->X)-(char*)this)
 
+//for static variables
+//#define PADDRS(X) ((char*)&(X)-(char*)this)
+
+
+
 /******************************************************************************
  * Exception handling
  */
@@ -1301,7 +1306,7 @@ static unsigned long _nan[] = { 0xffffffff, 0x7fffffff, };
 
 /// General string encapsulation
 class gld_string {
-private: // data
+public: // should be private
 	typedef struct strbuf {
 		unsigned int lock; // TODO implement locking
 		size_t len;
@@ -2036,11 +2041,11 @@ BIDDERSTATE& charToState(char *s){
 		bidState = BS_UNKNOWN;
 	} else if(*s == '1'){
 		bidState = BS_OFF;
-	} else if(*s == '2'){
-		bidState = BS_ON;
 	} else {
-
+		bidState = BS_ON;
 	}
+
+	return bidState;
 }
 
 inline const char * const boolToString(bool b)
@@ -2052,9 +2057,8 @@ inline const char * const boolToString(bool b)
 class GLDBase {
 	public:
 
-		//virtual ~GLDBase();
-		static char1024 GLDOutBuf;
-		static char1024 GLDInBuf;
+		inline char1024 GLDOutBuf = new char();
+		inline char1024 GLDInBuf = new char();
 
 		static gld_string *inBuffer;
 		static gld_string *outBuffer;
@@ -2062,6 +2066,9 @@ class GLDBase {
 		static gld_string *delim;
 		static gld_string *msgDelim;
 
+		virtual ~GLDBase() = 0;
+
+		//static
 		void addMsgOutBuf(gld_string &message);
 		void addDataOutBuf(OBJECT *obj, PROPERTYNAME name, char *value);
 		void addDataOutBuf(OBJECT *obj, PROPERTYNAME name, double value);
@@ -2074,10 +2081,30 @@ class GLDBase {
 		int AM_submit(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id);
 
 		int AM_submit_nolock(char *from, double quantity, double real_price, KEY key, BIDDERSTATE state, bool rebid, int64 mkt_id);
+
+/*		GLDBase(MODULE *module);
+		int create(void);
+		int init(OBJECT *parent);
+		int isa(char *classname);
+		TIMESTAMP presync(TIMESTAMP t0, TIMESTAMP t1);
+		TIMESTAMP sync(TIMESTAMP t0, TIMESTAMP t1);
+		TIMESTAMP postsync(TIMESTAMP t0, TIMESTAMP t1);*/
 };
 
-char1024 GLDBase::GLDInBuf = new char();
-char1024 GLDBase::GLDOutBuf = new char();
+/*GLDBase::GLDBase(MODULE *module){
+	if (oclass==NULL)
+		{
+			oclass = gl_register_class(module,"GLDBase",sizeof(GLDBase),passconfig|PC_AUTOLOCK);
+			if (oclass==NULL)
+				throw "unable to register class auction";
+			else
+				oclass->trl = TRL_QUALIFIED;
+
+			if (gl_publish_variable(oclass,
+}*/
+
+//char1024 GLDBase::GLDInBuf = new char();
+//char1024 GLDBase::GLDOutBuf = new char();
 
 gld_string *GLDBase::inBuffer = new gld_string();
 gld_string *GLDBase::outBuffer = new gld_string();
@@ -2085,12 +2112,12 @@ gld_string *GLDBase::outBuffer = new gld_string();
 gld_string *GLDBase::delim = new gld_string("%@%");
 gld_string *GLDBase::msgDelim = new gld_string("@%@");
 
-/*GLDBase::~GLDBase(){
-}*/
+GLDBase::~GLDBase(){
+}
 
 void GLDBase::addMsgOutBuf(gld_string &message){
 	inBuffer = inBuffer + *msgDelim + message;
-	GLDOutBuf = inBuffer->get_buffer_non_const();
+	GLDOutBuf = inBuffer->get_buffer_non_const();//only needs to happen on last message
 
 }
 
@@ -2106,8 +2133,6 @@ void GLDBase::addDataOutBuf(OBJECT *obj, PROPERTYNAME name, double value){
 	addMsgOutBuf(*message);
 }
 
-
-
 void GLDBase::netPktArrived(){
 	//gld_string *inBuffer = new gld_string(GLDInBuf)
 	while(!inBuffer->empty()){
@@ -2122,7 +2147,7 @@ void GLDBase::netPktArrived(){
 		int64 mkt_id = atoll(line.getCharUntilDelim(*delim));
 		submitImpl(from, quantity, real_price, key, state, rebid, mkt_id);
 
-		//update inBuffer
+		inBuffer->set_string(NULL);
 	}
 }
 
@@ -2143,7 +2168,7 @@ int GLDBase::AM_submit_nolock(char *from, double quantity, double real_price, KE
 		addMsgOutBuf(*message);
 		return 0;
 	} else {
-		submit_nolockImpl(from, quantity, real_price, key, state, rebid, mkt_id);
+		return submit_nolockImpl(from, quantity, real_price, key, state, rebid, mkt_id);
 	}
 }
 
@@ -2168,21 +2193,21 @@ inline void network_set_value_by_name(OBJECT *obj, PROPERTYNAME name, double val
 	if(false){//same implementation as gl_set_value_by_name in this case
 		//gl_set_value_by_name(obj, name, value);
 	} else {//send over network
-
 		GLDBase *a;
 		a->addDataOutBuf(obj, name, value);
 	}
 }
 
-inline void checkInBuf(){
+/*inline void checkInBuf(){
 
 	GLDBase *a;
 	while(!a->inBuffer->empty()){
 
 		//if its bid, find the auction object and call netPktArrived
-		//otherwise do gl_set_value_by_name (unless properties modified directly from omnet++)
+		//otherwise do gl_set_value_by_name (unless properties modified directly from omnet++
+		a->inBuffer->set_string(NULL);
 	}
-}
+}*/
 
 static PROPERTYSTRUCT nullpstruct;
 /// Property container
