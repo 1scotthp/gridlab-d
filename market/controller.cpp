@@ -196,7 +196,7 @@ int controller::create(){
 	use_predictive_bidding = FALSE;
 	controller_bid.bid_id = -1;
 	controller_bid.market_id = -1;
-	controller_bid.price = 0;
+	controller_bid.price = 100;//=0
 	controller_bid.quantity = 0;
 	controller_bid.state = BS_UNKNOWN;
 	controller_bid.rebid = false;

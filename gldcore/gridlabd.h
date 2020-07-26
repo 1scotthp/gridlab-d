@@ -2170,7 +2170,7 @@ int GLDBase::AM_submit_nolock(char *from, double quantity, double real_price, KE
 		*message = *message + delim + quantity + delim + real_price + delim + key +
 				delim + dblState + delim + boolToString(rebid) + delim + mkt_id;
 		addMsgOutBuf(*message);
-		return 0;
+		return 1;//should be 1
 	} else {
 		return submit_nolockImpl(from, quantity, real_price, key, state, rebid, mkt_id);
 	}
